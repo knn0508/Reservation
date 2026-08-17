@@ -1,24 +1,29 @@
 import { useEffect, useRef } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getAvailability, type AvailabilitySlot } from "../lib/api"
+import { getAvailability, type AvailabilitySlot, type TableCategory } from "../lib/api"
 
-function wsUrl(day: string): string {
+function categoryForPartySize(partySize: number): TableCategory {
+  return partySize <= 2 ? "2_seater" : "4_seater"
+}
+
+function wsUrl(restaurantId: number, day: string): string {
   const proto = window.location.protocol === "https:" ? "wss" : "ws"
   const host = window.location.hostname
-  return `${proto}://${host}:8000/ws/availability/${day}`
+  return `${proto}://${host}:8000/ws/availability/${restaurantId}/${day}`
 }
 
-export function availabilityKey(day: string) {
-  return ["availability", day] as const
+export function availabilityKey(restaurantId: number, day: string, partySize: number) {
+  return ["availability", restaurantId, day, partySize] as const
 }
 
-export function useAvailability(day: string) {
+export function useAvailability(restaurantId: number, day: string, partySize: number) {
   const queryClient = useQueryClient()
   const socketRef = useRef<WebSocket | null>(null)
+  const category = categoryForPartySize(partySize)
 
   const query = useQuery({
-    queryKey: availabilityKey(day),
-    queryFn: () => getAvailability(day),
+    queryKey: availabilityKey(restaurantId, day, partySize),
+    queryFn: () => getAvailability(restaurantId, day, partySize),
     staleTime: 30_000,
   })
 
@@ -29,14 +34,17 @@ export function useAvailability(day: string) {
 
     function connect() {
       if (cancelled) return
-      socket = new WebSocket(wsUrl(day))
+      socket = new WebSocket(wsUrl(restaurantId, day))
       socketRef.current = socket
 
       socket.onmessage = (event) => {
-        const patch = JSON.parse(event.data) as AvailabilitySlot
-        queryClient.setQueryData<AvailabilitySlot[]>(availabilityKey(day), (current) => {
+        const patch = JSON.parse(event.data) as { time: string; category: TableCategory; available_count: number }
+        if (patch.category !== category) return
+        queryClient.setQueryData<AvailabilitySlot[]>(availabilityKey(restaurantId, day, partySize), (current) => {
           if (!current) return current
-          return current.map((slot) => (slot.time === patch.time ? { ...slot, ...patch } : slot))
+          return current.map((slot) =>
+            slot.time === patch.time ? { ...slot, available_count: patch.available_count } : slot,
+          )
         })
       }
 
@@ -52,7 +60,7 @@ export function useAvailability(day: string) {
       if (retryTimer) clearTimeout(retryTimer)
       socket?.close()
     }
-  }, [day, queryClient])
+  }, [restaurantId, day, category, partySize, queryClient])
 
   return query
 }

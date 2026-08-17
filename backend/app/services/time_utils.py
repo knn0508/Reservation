@@ -1,4 +1,4 @@
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 import pytz
 
@@ -32,3 +32,15 @@ def bucket_range(start_time: datetime) -> list[datetime]:
         start_time + timedelta(minutes=i * settings.bucket_minutes)
         for i in range(settings.turn_buckets)
     ]
+
+
+def slot_times_for_day(day: date) -> list[datetime]:
+    """Every bookable slot start time for a service day, from open to close."""
+    open_t, close_t = settings.service_open_time, settings.service_close_time
+    cursor = RESTAURANT_TZ.localize(datetime(day.year, day.month, day.day, open_t.hour, open_t.minute))
+    day_close = RESTAURANT_TZ.localize(datetime(day.year, day.month, day.day, close_t.hour, close_t.minute))
+    times = []
+    while cursor < day_close:
+        times.append(cursor)
+        cursor += timedelta(minutes=settings.bucket_minutes)
+    return times

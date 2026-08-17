@@ -4,16 +4,16 @@ import { CaretLeft } from "@phosphor-icons/react"
 import { PartySizeStep } from "./PartySizeStep"
 import { DateStrip } from "./DateStrip"
 import { SlotGrid } from "./SlotGrid"
-import { GuestDetailsForm, type GuestDetails } from "./GuestDetailsForm"
 import { ConfirmationCard } from "./ConfirmationCard"
 import { useAvailability } from "../../hooks/useAvailability"
 import { useCreateReservation } from "../../hooks/useReservation"
+import { useAuth } from "../../hooks/useAuth"
 import { toDayKey } from "../../lib/time"
 import { ApiError } from "../../lib/api"
 
-type Step = "party" | "slot" | "details" | "done"
+type Step = "date" | "party" | "time" | "done"
 
-const STEP_ORDER: Step[] = ["party", "slot", "details", "done"]
+const STEP_ORDER: Step[] = ["date", "party", "time", "done"]
 
 const variants = {
   enter: (dir: number) => ({ opacity: 0, x: dir * 24 }),
@@ -21,15 +21,14 @@ const variants = {
   exit: (dir: number) => ({ opacity: 0, x: dir * -24 }),
 }
 
-export function BookingWizard() {
-  const [step, setStep] = useState<Step>("party")
-  const [partySize, setPartySize] = useState<number | null>(null)
+export function BookingWizard({ restaurantId }: { restaurantId: number }) {
+  const { user } = useAuth()
+  const [step, setStep] = useState<Step>("date")
   const [day, setDay] = useState(() => toDayKey(new Date()))
-  const [slotTime, setSlotTime] = useState<string | null>(null)
-  const [details, setDetails] = useState<GuestDetails>({ guest_name: "", guest_email: "", guest_phone: "" })
+  const [partySize, setPartySize] = useState<number | null>(null)
   const [idempotencyKey] = useState(() => crypto.randomUUID())
 
-  const availability = useAvailability(day)
+  const availability = useAvailability(restaurantId, day, partySize ?? 2)
   const createReservation = useCreateReservation()
 
   const dir = (target: Step) => (STEP_ORDER.indexOf(target) > STEP_ORDER.indexOf(step) ? 1 : -1)
@@ -38,22 +37,31 @@ export function BookingWizard() {
     setStep(target)
   }
 
-  function handleSubmit() {
-    if (!slotTime) return
+  function handleSelectSlot(time: string) {
+    if (!partySize || !user) return
     createReservation.mutate(
-      { ...details, party_size: partySize as number, start_time: slotTime, idempotency_key: idempotencyKey },
+      {
+        restaurant_id: restaurantId,
+        guest_name: user.full_name,
+        guest_email: user.email,
+        guest_phone: user.phone,
+        party_size: partySize,
+        start_time: time,
+        idempotency_key: idempotencyKey,
+      },
       { onSuccess: () => goTo("done") },
     )
   }
 
-  const canBack = step === "slot" || step === "details"
+  const backTarget: Partial<Record<Step, Step>> = { party: "date", time: "party" }
+  const canBack = step in backTarget
 
   return (
     <div className="relative min-h-[26rem]">
       {canBack && (
         <button
           type="button"
-          onClick={() => goTo(step === "details" ? "slot" : "party")}
+          onClick={() => goTo(backTarget[step]!)}
           className="mb-5 flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-ink-600 transition-colors hover:text-ink-950"
         >
           <CaretLeft size={13} weight="bold" />
@@ -71,60 +79,60 @@ export function BookingWizard() {
           exit="exit"
           transition={{ type: "spring", stiffness: 340, damping: 32 }}
         >
+          {step === "date" && (
+            <div>
+              <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 1</p>
+              <h2 className="font-display text-2xl text-ink-950 md:text-3xl">Pick a date</h2>
+              <p className="mt-2 max-w-[46ch] text-sm leading-relaxed text-ink-600">
+                Reservations open up to 7 days ahead.
+              </p>
+              <div className="mt-6">
+                <DateStrip
+                  value={day}
+                  days={7}
+                  onChange={(value) => {
+                    setDay(value)
+                    goTo("party")
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           {step === "party" && (
             <div>
               <PartySizeStep
                 value={partySize}
                 onChange={(size) => {
                   setPartySize(size)
-                  goTo("slot")
+                  goTo("time")
                 }}
               />
             </div>
           )}
 
-          {step === "slot" && partySize && (
+          {step === "time" && partySize && (
             <div>
-              <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 2</p>
-              <h2 className="font-display text-2xl text-ink-950 md:text-3xl">Pick a date and time</h2>
-              <div className="mt-6">
-                <DateStrip value={day} onChange={setDay} />
-              </div>
+              <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 3</p>
+              <h2 className="font-display text-2xl text-ink-950 md:text-3xl">Pick a time</h2>
+              <p className="mt-2 max-w-[46ch] text-sm leading-relaxed text-ink-600">
+                Booking as {user?.full_name} ({user?.email}).
+              </p>
               <div className="mt-5">
                 <SlotGrid
                   slots={availability.data}
-                  partySize={partySize}
-                  value={slotTime}
-                  onChange={(time) => {
-                    setSlotTime(time)
-                    goTo("details")
-                  }}
-                  isLoading={availability.isLoading}
+                  value={null}
+                  onChange={handleSelectSlot}
+                  isLoading={availability.isLoading || createReservation.isPending}
                 />
               </div>
-            </div>
-          )}
-
-          {step === "details" && (
-            <div>
-              <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 3</p>
-              <h2 className="font-display text-2xl text-ink-950 md:text-3xl">Your details</h2>
-              <div className="mt-6">
-                <GuestDetailsForm
-                  details={details}
-                  onChange={setDetails}
-                  onSubmit={handleSubmit}
-                  submitLabel="Confirm reservation"
-                  isSubmitting={createReservation.isPending}
-                  serverError={
-                    createReservation.isError
-                      ? createReservation.error instanceof ApiError
-                        ? createReservation.error.message
-                        : "Something went wrong — please try again."
-                      : null
-                  }
-                />
-              </div>
+              {createReservation.isError && (
+                <div className="mt-4 rounded-lg border border-rust-500/30 bg-rust-500/5 px-3.5 py-2.5 text-sm text-rust-500">
+                  {createReservation.error instanceof ApiError
+                    ? createReservation.error.message
+                    : "Something went wrong — please try again."}
+                </div>
+              )}
             </div>
           )}
 

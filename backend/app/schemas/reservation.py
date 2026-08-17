@@ -7,6 +7,7 @@ from app.models.enums import ReservationStatus, TableCategory
 
 
 class ReservationCreate(BaseModel):
+    restaurant_id: int
     guest_name: str = Field(min_length=1, max_length=100)
     guest_email: EmailStr
     guest_phone: str = Field(min_length=1, max_length=50)
@@ -21,6 +22,7 @@ class ReservationDelay(BaseModel):
 
 class ReservationOut(BaseModel):
     id: uuid.UUID
+    restaurant_id: int
     guest_name: str
     guest_email: str
     guest_phone: str
@@ -29,7 +31,7 @@ class ReservationOut(BaseModel):
     start_time: datetime
     end_time: datetime
     status: ReservationStatus
-    assigned_table_id: int | None
+    assigned_table_id: int
 
     class Config:
         from_attributes = True
@@ -37,8 +39,7 @@ class ReservationOut(BaseModel):
 
 class AvailabilitySlot(BaseModel):
     time: datetime
-    tables_2_free: int
-    tables_4_free: int
+    available_count: int
 
 
 class AvailabilityQuery(BaseModel):
@@ -47,6 +48,7 @@ class AvailabilityQuery(BaseModel):
 
 
 class HoldCreate(BaseModel):
+    restaurant_id: int
     party_size: int = Field(ge=1, le=4)
     start_time: datetime
 

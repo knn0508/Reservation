@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import admin, ai, availability, holds, reservations, ws
+from app.api.routes import admin, ai, auth, availability, holds, reservations, restaurants, ws
 
 app = FastAPI(title="Restaurant Reservation API")
 
@@ -13,6 +13,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
+app.include_router(restaurants.router)
 app.include_router(availability.router)
 app.include_router(reservations.router)
 app.include_router(holds.router)

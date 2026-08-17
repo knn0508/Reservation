@@ -1,15 +1,34 @@
+import { getToken } from "./auth-storage"
+
 export type TableCategory = "2_seater" | "4_seater"
 
 export type ReservationStatus = "booked" | "seated" | "completed" | "cancelled" | "no_show"
 
+export type UserRole = "customer" | "admin"
+
+export interface Restaurant {
+  id: number
+  slug: string
+  name: string
+}
+
+export interface User {
+  id: number
+  email: string
+  full_name: string
+  phone: string
+  role: UserRole
+  restaurant_id: number | null
+}
+
 export interface AvailabilitySlot {
   time: string
-  tables_2_free: number
-  tables_4_free: number
+  available_count: number
 }
 
 export interface Reservation {
   id: string
+  restaurant_id: number
   guest_name: string
   guest_email: string
   guest_phone: string
@@ -18,11 +37,12 @@ export interface Reservation {
   start_time: string
   end_time: string
   status: ReservationStatus
-  assigned_table_id: number | null
+  assigned_table_id: number
 }
 
 export interface DiningTable {
   id: number
+  restaurant_id: number
   table_number: string
   category: TableCategory
   is_active: boolean
@@ -40,16 +60,25 @@ class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getToken()
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...init?.headers,
     },
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({ detail: res.statusText }))
-    throw new ApiError(res.status, body.detail ?? res.statusText)
+    const detail = body.detail ?? res.statusText
+    // FastAPI validation errors (422) send `detail` as an array of {msg, loc, ...} objects, not a string.
+    const message = Array.isArray(detail)
+      ? detail.map((d: { msg?: string }) => d.msg ?? JSON.stringify(d)).join("; ")
+      : typeof detail === "string"
+        ? detail
+        : JSON.stringify(detail)
+    throw new ApiError(res.status, message)
   }
   if (res.status === 204) return undefined as T
   return res.json() as Promise<T>
@@ -57,11 +86,54 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export { ApiError }
 
-export function getAvailability(day: string): Promise<AvailabilitySlot[]> {
-  return request(`/api/availability?day=${day}`)
+// --- auth ---
+
+export interface RegisterInput {
+  email: string
+  password: string
+  full_name: string
+  phone: string
 }
 
+export interface LoginInput {
+  email: string
+  password: string
+}
+
+export interface AuthResponse {
+  access_token: string
+  token_type: string
+  user: User
+}
+
+export function register(input: RegisterInput): Promise<User> {
+  return request("/api/auth/register", { method: "POST", body: JSON.stringify(input) })
+}
+
+export function login(input: LoginInput): Promise<AuthResponse> {
+  return request("/api/auth/login", { method: "POST", body: JSON.stringify(input) })
+}
+
+export function getMe(): Promise<User> {
+  return request("/api/auth/me")
+}
+
+// --- restaurants ---
+
+export function getRestaurants(): Promise<Restaurant[]> {
+  return request("/api/restaurants")
+}
+
+// --- availability ---
+
+export function getAvailability(restaurantId: number, day: string, partySize: number): Promise<AvailabilitySlot[]> {
+  return request(`/api/availability?restaurant_id=${restaurantId}&day=${day}&party_size=${partySize}`)
+}
+
+// --- reservations ---
+
 export interface CreateReservationInput {
+  restaurant_id: number
   guest_name: string
   guest_email: string
   guest_phone: string
@@ -74,8 +146,8 @@ export function createReservation(input: CreateReservationInput): Promise<Reserv
   return request("/api/reservations", { method: "POST", body: JSON.stringify(input) })
 }
 
-export function getReservation(id: string): Promise<Reservation> {
-  return request(`/api/reservations/${id}`)
+export function getMyReservations(): Promise<Reservation[]> {
+  return request("/api/reservations/me")
 }
 
 export function cancelReservation(id: string): Promise<Reservation> {
@@ -86,13 +158,19 @@ export function markNoShow(id: string): Promise<Reservation> {
   return request(`/api/reservations/${id}/no-show`, { method: "POST" })
 }
 
-export function seatReservation(id: string, tableId: number): Promise<Reservation> {
-  return request(`/api/reservations/${id}/seat?table_id=${tableId}`, { method: "POST" })
+export function seatReservation(id: string): Promise<Reservation> {
+  return request(`/api/reservations/${id}/seat`, { method: "POST" })
 }
 
 export function completeReservation(id: string): Promise<Reservation> {
   return request(`/api/reservations/${id}/complete`, { method: "POST" })
 }
+
+export function revertReservationStatus(id: string): Promise<Reservation> {
+  return request(`/api/reservations/${id}/revert`, { method: "POST" })
+}
+
+// --- admin ---
 
 export function getAdminReservations(day: string): Promise<Reservation[]> {
   return request(`/api/admin/reservations?day=${day}`)

@@ -1,31 +1,85 @@
-"""Seeds dining tables and today+tomorrow's inventory buckets. Run: python -m scripts.seed"""
+"""Seeds two restaurants, their dining tables, and one admin account each. Run: python -m scripts.seed"""
 import asyncio
-from datetime import date, timedelta
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 from sqlalchemy import select
 
 from app.core.config import settings
 from app.core.db import AsyncSessionLocal
+from app.core.security import hash_password
 from app.models.dining_table import DiningTable
-from app.models.enums import TableCategory
-from app.services.inventory_service import seed_day
+from app.models.enums import TableCategory, UserRole
+from app.models.restaurant import Restaurant
+from app.models.user import User
+
+RESTAURANTS = [
+    {
+        "slug": "mugam-masasi",
+        "name": "Muğam Masası",
+        "admin_email": "admin@mugammasasi-demo.com",
+        "admin_password": "admin12345",
+    },
+    {
+        "slug": "nar-bagi",
+        "name": "Nar Bağı",
+        "admin_email": "admin@narbagi-demo.com",
+        "admin_password": "admin12345",
+    },
+]
 
 
 async def main() -> None:
     async with AsyncSessionLocal() as session:
-        existing = await session.scalar(select(DiningTable).limit(1))
-        if existing is None:
-            for i in range(1, settings.tables_2_seater_count + 1):
-                session.add(DiningTable(table_number=f"T2-{i}", category=TableCategory.SEATER_2, zone="main"))
-            for i in range(1, settings.tables_4_seater_count + 1):
-                session.add(DiningTable(table_number=f"T4-{i}", category=TableCategory.SEATER_4, zone="main"))
-            await session.commit()
-            print("Seeded dining tables")
+        for spec in RESTAURANTS:
+            restaurant = await session.scalar(select(Restaurant).where(Restaurant.slug == spec["slug"]))
+            if restaurant is None:
+                restaurant = Restaurant(slug=spec["slug"], name=spec["name"])
+                session.add(restaurant)
+                await session.flush()
+                print(f"Seeded restaurant: {spec['name']}")
 
-        for offset in range(2):
-            day = date.today() + timedelta(days=offset)
-            count = await seed_day(session, day)
-            print(f"Seeded {count} buckets for {day}")
+            existing_table = await session.scalar(
+                select(DiningTable).where(DiningTable.restaurant_id == restaurant.id).limit(1)
+            )
+            if existing_table is None:
+                for i in range(1, settings.tables_2_seater_count + 1):
+                    session.add(
+                        DiningTable(
+                            restaurant_id=restaurant.id,
+                            table_number=f"T2-{i}",
+                            category=TableCategory.SEATER_2,
+                            zone="main",
+                        )
+                    )
+                for i in range(1, settings.tables_4_seater_count + 1):
+                    session.add(
+                        DiningTable(
+                            restaurant_id=restaurant.id,
+                            table_number=f"T4-{i}",
+                            category=TableCategory.SEATER_4,
+                            zone="main",
+                        )
+                    )
+                print(f"Seeded tables for: {spec['name']}")
+
+            admin = await session.scalar(select(User).where(User.email == spec["admin_email"]))
+            if admin is None:
+                session.add(
+                    User(
+                        email=spec["admin_email"],
+                        password_hash=hash_password(spec["admin_password"]),
+                        full_name=f"{spec['name']} Admin",
+                        phone="+994000000000",
+                        role=UserRole.ADMIN,
+                        restaurant_id=restaurant.id,
+                    )
+                )
+                print(f"Seeded admin for {spec['name']}: {spec['admin_email']} / {spec['admin_password']}")
+
+        await session.commit()
 
 
 if __name__ == "__main__":

@@ -3,11 +3,13 @@ import { nextNDays, formatShortDate } from "../../lib/time"
 export function DateStrip({
   value,
   onChange,
+  days: dayCount = 30,
 }: {
   value: string
   onChange: (day: string) => void
+  days?: number
 }) {
-  const days = nextNDays(14)
+  const days = nextNDays(dayCount)
 
   return (
     <div className="-mx-1 flex gap-2 overflow-x-auto pb-2 pl-1 pr-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

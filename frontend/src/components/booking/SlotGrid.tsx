@@ -2,19 +2,13 @@ import { motion } from "framer-motion"
 import type { AvailabilitySlot } from "../../lib/api"
 import { formatSlotTime } from "../../lib/time"
 
-function categoryFree(slot: AvailabilitySlot, partySize: number): number {
-  return partySize <= 2 ? slot.tables_2_free : slot.tables_4_free
-}
-
 export function SlotGrid({
   slots,
-  partySize,
   value,
   onChange,
   isLoading,
 }: {
   slots: AvailabilitySlot[] | undefined
-  partySize: number
   value: string | null
   onChange: (time: string) => void
   isLoading: boolean
@@ -37,7 +31,7 @@ export function SlotGrid({
     )
   }
 
-  const anyOpen = slots.some((slot) => categoryFree(slot, partySize) > 0)
+  const anyOpen = slots.some((slot) => slot.available_count > 0)
 
   if (!anyOpen) {
     return (
@@ -50,8 +44,7 @@ export function SlotGrid({
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
       {slots.map((slot, i) => {
-        const free = categoryFree(slot, partySize)
-        const disabled = free <= 0
+        const disabled = slot.available_count <= 0
         const active = value === slot.time
         return (
           <motion.button

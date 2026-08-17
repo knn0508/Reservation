@@ -11,7 +11,7 @@ export function PartySizeStep({
 }) {
   return (
     <div>
-      <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 1</p>
+      <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 2</p>
       <h2 className="font-display text-2xl text-ink-950 md:text-3xl">How many at your table?</h2>
       <p className="mt-2 max-w-[46ch] text-sm leading-relaxed text-ink-600">
         Parties larger than four are seated as a shared table experience — call the house directly and we

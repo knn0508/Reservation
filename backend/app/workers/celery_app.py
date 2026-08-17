@@ -1,5 +1,4 @@
 from celery import Celery
-from celery.schedules import crontab
 
 from app.core.config import settings
 
@@ -14,10 +13,6 @@ celery_app.conf.beat_schedule = {
     "auto-no-show-sweep": {
         "task": "app.workers.tasks.sweep_no_shows",
         "schedule": 60.0,
-    },
-    "seed-tomorrow-buckets": {
-        "task": "app.workers.tasks.seed_tomorrow",
-        "schedule": crontab(hour=3, minute=0),
     },
 }
 celery_app.conf.timezone = settings.restaurant_timezone

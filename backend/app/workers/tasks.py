@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from sqlalchemy import text
 
@@ -8,8 +8,6 @@ from app.workers.celery_app import celery_app
 from app.workers.db import SyncSessionLocal
 
 logger = logging.getLogger(__name__)
-
-CATEGORY_COLUMN = {"2_seater": "tables_2_free", "4_seater": "tables_4_free"}
 
 
 @celery_app.task(name="app.workers.tasks.send_reminder")
@@ -29,35 +27,18 @@ def send_reminder(reservation_id: str, kind: str) -> None:
 
 @celery_app.task(name="app.workers.tasks.sweep_no_shows")
 def sweep_no_shows() -> int:
-    """Runs every minute: any booked reservation past start_time + grace becomes a no_show,
-    freeing its remaining table-buckets back to inventory."""
+    """Runs every minute: any booked reservation past start_time + grace becomes a no_show.
+    Availability is computed live from status, so nothing else needs to be freed here.
+    """
     cutoff = datetime.utcnow() - timedelta(minutes=settings.no_show_grace_minutes)
     marked = 0
     with SyncSessionLocal() as session:
         rows = session.execute(
-            text(
-                """
-                SELECT id, table_category, start_time, end_time
-                FROM reservation
-                WHERE status = 'booked' AND start_time < :cutoff
-                """
-            ),
+            text("SELECT id FROM reservation WHERE status = 'booked' AND start_time < :cutoff"),
             {"cutoff": cutoff},
         ).fetchall()
 
         for row in rows:
-            column = CATEGORY_COLUMN[row.table_category]
-            session.execute(
-                text(
-                    f"""
-                    UPDATE inventory_bucket
-                    SET {column} = {column} + 1,
-                        arrivals_count = GREATEST(arrivals_count - 1, 0)
-                    WHERE bucket_time >= :start_time AND bucket_time < :end_time
-                    """
-                ),
-                {"start_time": row.start_time, "end_time": row.end_time},
-            )
             session.execute(
                 text("UPDATE reservation SET status = 'no_show' WHERE id = :id"), {"id": row.id}
             )
@@ -73,17 +54,3 @@ def sweep_no_shows() -> int:
             marked += 1
         session.commit()
     return marked
-
-
-@celery_app.task(name="app.workers.tasks.seed_tomorrow")
-def seed_tomorrow() -> None:
-    import asyncio
-
-    from app.core.db import AsyncSessionLocal
-    from app.services.inventory_service import seed_day
-
-    async def _run() -> None:
-        async with AsyncSessionLocal() as session:
-            await seed_day(session, date.today() + timedelta(days=1))
-
-    asyncio.run(_run())

@@ -1,13 +1,9 @@
-import asyncio
-from datetime import date, datetime
-
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 from app.core.db import Base
-from app.services.inventory_service import seed_day
+from app.models.restaurant import Restaurant
 
 
 @pytest_asyncio.fixture
@@ -26,8 +22,10 @@ async def session_factory(engine):
 
 
 @pytest_asyncio.fixture
-async def seeded_day(session_factory):
-    day = date(2026, 9, 1)
+async def restaurant(session_factory):
     async with session_factory() as session:
-        await seed_day(session, day)
-    return day
+        r = Restaurant(slug="test-restaurant", name="Test Restaurant")
+        session.add(r)
+        await session.commit()
+        await session.refresh(r)
+        return r

@@ -19,3 +19,8 @@ class ReservationEventType(str, enum.Enum):
     STATUS_CHANGED = "status_changed"
     DELAYED = "delayed"
     WAITLIST_PROMOTED = "waitlist_promoted"
+
+
+class UserRole(str, enum.Enum):
+    CUSTOMER = "customer"
+    ADMIN = "admin"

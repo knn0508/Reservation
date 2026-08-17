@@ -19,6 +19,8 @@ class Reservation(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
     )
+    restaurant_id: Mapped[int] = mapped_column(Integer, ForeignKey("restaurant.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False)
     guest_name: Mapped[str] = mapped_column(String(100), nullable=False)
     guest_email: Mapped[str] = mapped_column(String(100), nullable=False)
     guest_phone: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -34,8 +36,9 @@ class Reservation(Base):
         default=ReservationStatus.BOOKED,
         nullable=False,
     )
-    assigned_table_id: Mapped[int | None] = mapped_column(
-        Integer, ForeignKey("dining_table.id"), nullable=True
+    # Set at booking time (auto-assigned, first free matching table) - never null.
+    assigned_table_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("dining_table.id"), nullable=False
     )
     idempotency_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(

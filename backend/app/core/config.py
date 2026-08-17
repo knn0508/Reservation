@@ -13,6 +13,9 @@ class Settings(BaseSettings):
 
     gemini_api_key: str = ""
 
+    jwt_secret: str = "dev-secret-change-me"
+    jwt_expire_minutes: int = 60 * 24 * 7
+
     restaurant_timezone: str = "Asia/Baku"
     service_open_time: time = time(12, 0)
     service_close_time: time = time(23, 0)
@@ -21,7 +24,7 @@ class Settings(BaseSettings):
     dine_duration_minutes: int = 90
     buffer_minutes: int = 15
     max_party_size: int = 4
-    max_arrivals_per_bucket: int = 4
+    booking_max_days_ahead: int = 7
     hold_ttl_seconds: int = 300
     no_show_grace_minutes: int = 20
 

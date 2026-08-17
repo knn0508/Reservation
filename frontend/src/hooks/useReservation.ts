@@ -1,12 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { cancelReservation, createReservation, getReservation, type CreateReservationInput } from "../lib/api"
+import { cancelReservation, createReservation, getMyReservations, type CreateReservationInput } from "../lib/api"
 
-export function useReservationLookup(id: string | null) {
+export function useMyReservations() {
   return useQuery({
-    queryKey: ["reservation", id],
-    queryFn: () => getReservation(id as string),
-    enabled: Boolean(id),
-    retry: false,
+    queryKey: ["reservations", "me"],
+    queryFn: getMyReservations,
   })
 }
 
@@ -22,6 +20,7 @@ export function useCancelReservation() {
     mutationFn: (id: string) => cancelReservation(id),
     onSuccess: (reservation) => {
       queryClient.setQueryData(["reservation", reservation.id], reservation)
+      queryClient.invalidateQueries({ queryKey: ["reservations", "me"] })
     },
   })
 }
