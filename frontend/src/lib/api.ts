@@ -26,6 +26,12 @@ export interface AvailabilitySlot {
   available_count: number
 }
 
+export interface PreorderItem {
+  name: string
+  quantity: number
+  price: number
+}
+
 export interface Reservation {
   id: string
   restaurant_id: number
@@ -38,6 +44,8 @@ export interface Reservation {
   end_time: string
   status: ReservationStatus
   assigned_table_id: number
+  preorder_items: PreorderItem[] | null
+  preorder_requested_at: string | null
 }
 
 export interface DiningTable {
@@ -152,6 +160,17 @@ export function getMyReservations(): Promise<Reservation[]> {
 
 export function cancelReservation(id: string): Promise<Reservation> {
   return request(`/api/reservations/${id}/cancel`, { method: "POST" })
+}
+
+export function createPreorder(
+  reservationId: string,
+  restaurantId: number,
+  items: PreorderItem[],
+): Promise<Reservation> {
+  return request(`/api/reservations/${reservationId}/preorder`, {
+    method: "POST",
+    body: JSON.stringify({ restaurant_id: restaurantId, items }),
+  })
 }
 
 export function markNoShow(id: string): Promise<Reservation> {

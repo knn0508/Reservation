@@ -31,7 +31,18 @@ export function SlotGrid({
     )
   }
 
-  const anyOpen = slots.some((slot) => slot.available_count > 0)
+  const now = Date.now()
+  const upcomingSlots = slots.filter((slot) => new Date(slot.time).getTime() > now)
+
+  if (upcomingSlots.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-ink-900/15 px-4 py-8 text-center text-sm text-ink-600">
+        No more service hours left today — try another date.
+      </div>
+    )
+  }
+
+  const anyOpen = upcomingSlots.some((slot) => slot.available_count > 0)
 
   if (!anyOpen) {
     return (
@@ -43,7 +54,7 @@ export function SlotGrid({
 
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-      {slots.map((slot, i) => {
+      {upcomingSlots.map((slot, i) => {
         const disabled = slot.available_count <= 0
         const active = value === slot.time
         return (

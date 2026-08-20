@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowCounterClockwise, Check, X } from "@phosphor-icons/react"
+import { ArrowCounterClockwise, CaretDown, Check, ForkKnife, X } from "@phosphor-icons/react"
 import {
   ApiError,
   cancelReservation,
@@ -168,8 +168,13 @@ function tableLabel(tables: DiningTable[] | undefined, tableId: number): string 
   return table ? `${table.table_number} · ${table.zone}` : `#${tableId}`
 }
 
+function orderTotal(items: { quantity: number; price: number }[]): number {
+  return items.reduce((sum, i) => sum + i.quantity * i.price, 0)
+}
+
 export function AdminPage() {
   const [day, setDay] = useState(() => toDayKey(new Date()))
+  const [openOrderId, setOpenOrderId] = useState<string | null>(null)
   const queryClient = useQueryClient()
 
   const reservationsKey = ["admin", "reservations", day]
@@ -180,6 +185,10 @@ export function AdminPage() {
   })
 
   const tables = useQuery({ queryKey: ["admin", "tables"], queryFn: getAdminTables })
+
+  // Already ordered by start_time from the API - filtering preserves that chronological order,
+  // so the kitchen sees pre-orders queued by exact reservation time, never by table number.
+  const ordersToday = (reservations.data ?? []).filter((r) => r.preorder_items && r.preorder_items.length > 0)
 
   function refresh() {
     queryClient.invalidateQueries({ queryKey: reservationsKey })
@@ -204,59 +213,141 @@ export function AdminPage() {
                 <th className="px-4 py-3 font-medium">Party</th>
                 <th className="px-4 py-3 font-medium">Table</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Food</th>
                 <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {reservations.isLoading && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-ink-600">
+                  <td colSpan={7} className="px-4 py-8 text-center text-ink-600">
                     Loading…
                   </td>
                 </tr>
               )}
               {reservations.data?.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-ink-600">
+                  <td colSpan={7} className="px-4 py-8 text-center text-ink-600">
                     No reservations for this day.
                   </td>
                 </tr>
               )}
-              {reservations.data?.map((r) => (
-                <tr key={r.id} className="border-b border-ink-900/6 last:border-0">
-                  <td className="px-4 py-3 tabular-nums text-ink-900">{formatSlotTime(r.start_time)}</td>
-                  <td className="px-4 py-3 text-ink-900">{r.guest_name}</td>
-                  <td className="px-4 py-3 text-ink-700">{r.party_size}</td>
-                  <td className="px-4 py-3 text-ink-700">{tableLabel(tables.data, r.assigned_table_id)}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide ${STATUS_STYLE[r.status] ?? ""}`}
-                    >
-                      {r.status.replace("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <RowActions reservation={r} onChanged={refresh} />
-                  </td>
-                </tr>
-              ))}
+              {reservations.data?.map((r) => {
+                const hasOrder = r.preorder_items && r.preorder_items.length > 0
+                const isOpen = openOrderId === r.id
+                return (
+                  <Fragment key={r.id}>
+                    <tr className="border-b border-ink-900/6 last:border-0">
+                      <td className="px-4 py-3 tabular-nums text-ink-900">{formatSlotTime(r.start_time)}</td>
+                      <td className="px-4 py-3 text-ink-900">{r.guest_name}</td>
+                      <td className="px-4 py-3 text-ink-700">{r.party_size}</td>
+                      <td className="px-4 py-3 text-ink-700">{tableLabel(tables.data, r.assigned_table_id)}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide ${STATUS_STYLE[r.status] ?? ""}`}
+                        >
+                          {r.status.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {hasOrder ? (
+                          <button
+                            type="button"
+                            onClick={() => setOpenOrderId(isOpen ? null : r.id)}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-ember-500/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-ember-600 transition-colors hover:bg-ember-500/15"
+                          >
+                            <ForkKnife size={11} weight="bold" />
+                            Ready for arrival ({r.preorder_items!.length})
+                            <CaretDown
+                              size={10}
+                              weight="bold"
+                              className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                            />
+                          </button>
+                        ) : (
+                          <span className="text-ink-600/30">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <RowActions reservation={r} onChanged={refresh} />
+                      </td>
+                    </tr>
+                    {hasOrder && (
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.tr
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="border-b border-ink-900/6 bg-ember-500/[0.03] last:border-0"
+                          >
+                            <td colSpan={7} className="px-4 py-3">
+                              <ul className="space-y-1 text-xs text-ink-700">
+                                {r.preorder_items!.map((item, i) => (
+                                  <li key={i} className="flex items-center justify-between gap-3 max-w-sm">
+                                    <span>
+                                      {item.quantity}× {item.name}
+                                    </span>
+                                    <span className="font-mono text-ink-600">
+                                      {(item.quantity * item.price).toFixed(2)} ₼
+                                    </span>
+                                  </li>
+                                ))}
+                                <li className="flex items-center justify-between gap-3 max-w-sm border-t border-ink-900/8 pt-1 font-medium text-ink-900">
+                                  <span>Total</span>
+                                  <span className="font-mono">{orderTotal(r.preorder_items!).toFixed(2)} ₼</span>
+                                </li>
+                              </ul>
+                            </td>
+                          </motion.tr>
+                        )}
+                      </AnimatePresence>
+                    )}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         </div>
 
-        <div className="rounded-[1.75rem] border border-ink-900/10 bg-parchment-100/60 p-5">
-          <h2 className="font-display text-lg text-ink-950">Tables</h2>
-          <div className="mt-4 space-y-2">
-            {tables.data?.map((t) => (
-              <div key={t.id} className="flex items-center justify-between text-sm">
-                <span className="text-ink-800">
-                  {t.table_number} · {t.zone}
-                </span>
-                <span className="text-xs uppercase tracking-wide text-ink-600">
-                  {t.category.replace("_", " ")}
-                </span>
-              </div>
-            ))}
+        <div className="space-y-8">
+          <div className="rounded-[1.75rem] border border-ink-900/10 bg-parchment-100/60 p-5">
+            <h2 className="font-display text-lg text-ink-950">Pre-orders</h2>
+            <p className="mt-1 text-xs text-ink-600">Sorted by reservation time — nothing to fire before then.</p>
+            <div className="mt-4 space-y-3">
+              {ordersToday.length === 0 && <p className="text-sm text-ink-600/60">None today.</p>}
+              {ordersToday.map((r) => (
+                <div key={r.id} className="rounded-xl border border-ink-900/8 bg-parchment-50 p-3">
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span className="font-mono tabular-nums text-ember-600">{formatSlotTime(r.start_time)}</span>
+                    <span className="text-ink-800">{r.guest_name}</span>
+                  </div>
+                  <ul className="mt-2 space-y-0.5 text-xs text-ink-600">
+                    {r.preorder_items!.map((item, i) => (
+                      <li key={i}>
+                        {item.quantity}× {item.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-ink-900/10 bg-parchment-100/60 p-5">
+            <h2 className="font-display text-lg text-ink-950">Tables</h2>
+            <div className="mt-4 space-y-2">
+              {tables.data?.map((t) => (
+                <div key={t.id} className="flex items-center justify-between text-sm">
+                  <span className="text-ink-800">
+                    {t.table_number} · {t.zone}
+                  </span>
+                  <span className="text-xs uppercase tracking-wide text-ink-600">
+                    {t.category.replace("_", " ")}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

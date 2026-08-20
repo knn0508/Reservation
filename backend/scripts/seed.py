@@ -17,9 +17,9 @@ from app.models.user import User
 
 RESTAURANTS = [
     {
-        "slug": "mugam-masasi",
-        "name": "Muğam Masası",
-        "admin_email": "admin@mugammasasi-demo.com",
+        "slug": "mamajan-georgian-cuisine",
+        "name": "Mamajan Georgian Cuisine",
+        "admin_email": "admin@mamajan-georgian-cuisine-demo.com",
         "admin_password": "admin12345",
     },
     {

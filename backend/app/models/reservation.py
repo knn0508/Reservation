@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import CheckConstraint, DateTime, Enum, FetchedValue, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -41,6 +42,11 @@ class Reservation(Base):
         Integer, ForeignKey("dining_table.id"), nullable=False
     )
     idempotency_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    # Set when the guest asks for their cart to be prepared and ready for their arrival time.
+    # A future POS integration would read this to auto-create the kitchen order for the
+    # assigned table (see booking_service.request_preorder).
+    preorder_items: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB, nullable=True)
+    preorder_requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
