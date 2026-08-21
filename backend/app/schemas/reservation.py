@@ -21,6 +21,17 @@ class ReservationDelay(BaseModel):
     minutes: int = Field(gt=0, le=180)
 
 
+class PreorderItem(BaseModel):
+    name: str = Field(min_length=1, max_length=150)
+    quantity: int = Field(ge=1, le=50)
+    price: float = Field(ge=0)
+
+
+class PreorderCreate(BaseModel):
+    restaurant_id: int
+    items: list[PreorderItem] = Field(min_length=1)
+
+
 class ReservationOut(BaseModel):
     id: uuid.UUID
     restaurant_id: int
@@ -33,6 +44,8 @@ class ReservationOut(BaseModel):
     end_time: datetime
     status: ReservationStatus
     assigned_table_id: int
+    preorder_items: list[PreorderItem] | None = None
+    preorder_requested_at: datetime | None = None
 
     class Config:
         from_attributes = True

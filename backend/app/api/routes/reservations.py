@@ -10,7 +10,7 @@ from app.core.db import get_session
 from app.models.enums import UserRole
 from app.models.reservation import Reservation
 from app.models.user import User
-from app.schemas.reservation import ReservationCreate, ReservationDelay, ReservationOut
+from app.schemas.reservation import PreorderCreate, ReservationCreate, ReservationDelay, ReservationOut
 from app.services import booking_service
 from app.services.time_utils import floor_to_bucket, local_time_of_day
 
@@ -90,6 +90,24 @@ async def cancel_reservation(
 ):
     _require_owner_or_admin(reservation, user)
     return await booking_service.cancel_reservation(session, reservation)
+
+
+@router.post("/{reservation_id}/preorder", response_model=ReservationOut)
+async def create_preorder(
+    payload: PreorderCreate,
+    reservation: Reservation = Depends(get_reservation_or_404),
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    _require_owner_or_admin(reservation, user)
+    if payload.restaurant_id != reservation.restaurant_id:
+        raise HTTPException(status_code=422, detail="This reservation is at a different restaurant")
+    try:
+        return await booking_service.request_preorder(
+            session, reservation, [item.model_dump() for item in payload.items]
+        )
+    except booking_service.PreorderError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
 
 
 @router.post("/{reservation_id}/no-show", response_model=ReservationOut)

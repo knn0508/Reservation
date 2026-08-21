@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { motion } from "framer-motion"
-import { ArrowUpRight } from "@phosphor-icons/react"
+import { ArrowUpRight, Image as ImageIcon } from "@phosphor-icons/react"
 import { Link, Navigate } from "react-router-dom"
 import { getRestaurants } from "../lib/api"
+import { getRestaurantContent } from "../lib/restaurantContent"
 import { useAuth } from "../hooks/useAuth"
 
 const EASE = [0.32, 0.72, 0, 1] as const
@@ -43,38 +44,53 @@ export function RestaurantsPage() {
             <div key={i} className="h-72 animate-pulse rounded-[2rem] bg-ink-900/5" />
           ))}
 
-        {restaurants.data?.map((r, i) => (
-          <motion.div
-            key={r.id}
-            initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: i * 0.1, ease: EASE }}
-            className="rounded-[2rem] bg-ink-900/[0.04] p-2 ring-1 ring-ink-900/5"
-          >
-            <Link
-              to={`/restaurants/${r.slug}/book`}
-              className="group relative flex h-72 flex-col justify-between overflow-hidden rounded-[calc(2rem-0.5rem)] border border-ink-900/8 bg-parchment-100 p-7 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1"
+        {restaurants.data?.map((r, i) => {
+          const content = getRestaurantContent(r.slug)
+          const cardImage = content.images[0]
+          return (
+            <motion.div
+              key={r.id}
+              initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, delay: i * 0.1, ease: EASE }}
+              className="rounded-[2rem] bg-ink-900/[0.04] p-2 ring-1 ring-ink-900/5"
             >
-              <div
-                className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-[0.15] blur-2xl"
-                style={{ background: "radial-gradient(circle, #c05f34, transparent 70%)" }}
-              />
-              <div>
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-ember-600">
-                  Restaurant {String(i + 1).padStart(2, "0")}
-                </span>
-                <h2 className="mt-3 font-display text-3xl text-ink-950">{r.name}</h2>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-ink-600">Reserve a table</span>
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-950 text-parchment-50 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  <ArrowUpRight size={16} weight="light" />
-                </span>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
+              <Link
+                to={`/restaurants/${r.slug}`}
+                className="group relative flex h-80 flex-col justify-end overflow-hidden rounded-[calc(2rem-0.5rem)] border border-ink-900/8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-1"
+              >
+                {cardImage ? (
+                  <img
+                    src={cardImage}
+                    alt={content.displayName}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(135deg,var(--color-ink-800),var(--color-ink-950))]">
+                    <ImageIcon size={36} weight="thin" className="text-parchment-50/25" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/85 via-ink-950/25 to-transparent" />
+
+                <div className="relative z-10 p-7">
+                  {content.cuisine && (
+                    <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-parchment-50/70">
+                      {content.cuisine}
+                    </span>
+                  )}
+                  <h2 className="mt-3 font-display text-3xl text-parchment-50">{content.displayName}</h2>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-sm text-parchment-50/75">View restaurant</span>
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-parchment-50 text-ink-950 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                      <ArrowUpRight size={16} weight="light" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          )
+        })}
       </div>
     </div>
   )

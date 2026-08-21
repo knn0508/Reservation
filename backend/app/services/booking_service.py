@@ -37,6 +37,10 @@ class RevertError(Exception):
     """Raised when a status change can't be undone, or its table has since been taken."""
 
 
+class PreorderError(Exception):
+    """Raised when a pre-order can't be attached to this reservation."""
+
+
 _REVERT_TARGET = {
     ReservationStatus.SEATED: ReservationStatus.BOOKED,
     ReservationStatus.COMPLETED: ReservationStatus.SEATED,
@@ -290,6 +294,65 @@ async def revert_status(session: AsyncSession, reservation: Reservation) -> Rese
     await _broadcast_range(
         session, reservation.restaurant_id, reservation.start_time, reservation.end_time
     )
+    return reservation
+
+
+async def request_preorder(session: AsyncSession, reservation: Reservation, items: list[dict]) -> Reservation:
+    """Attach a "have it ready when I arrive" pre-order to a booked reservation, and notify
+    the restaurant. Today "notify" means: the order becomes visible on the admin floor view
+    (admin polls /api/admin/reservations every 15s) - see AdminPage's Food column.
+
+    TODO(POS integration): once a POS system exists, this is the hook to auto-create the
+    kitchen/table order there instead of (or in addition to) storing it here.
+
+    Researched how real POS systems (Toast, Oracle Simphony, plus reservation<->POS
+    integrations like OpenTable/Resy/SevenRooms x Toast, and TablePath x Simphony) avoid the
+    "table isn't free at 14:00 but this order is for the 17:00 party" collision - the answer
+    is they never key the order off the table at all:
+      - The order is scheduled/time-gated, not table-gated. Toast calls this "Future Orders" /
+        "Pending Orders"; Simphony calls it "Future Orders" (Autofire checks). The check sits
+        in a separate pending queue, invisible to the kitchen, until its scheduled fire time.
+      - The kitchen display never sees it early. KDS systems hold scheduled items in a
+        dimmed/"On Hold" state, excluded from prep timers, until a fire event (manual tap or
+        the scheduled time) flips them active - so a 17:00 order can't render as "ready to
+        fire" while a 14:00 party is still seated.
+      - Table assignment is a separate, later step. The order/check attaches to the
+        reservation record; the actual table number is bound only at seating (arrival), not
+        at order time - so current table occupancy is irrelevant to accepting or storing a
+        future order.
+      - Reservation<->POS sync is event-driven and mostly one-directional (spend data flows
+        back into the reservation platform), not a shared live table-state lock.
+    Translating that here: fire off the POS order keyed on `reservation.assigned_table_id`,
+    scheduled for `reservation.start_time`, and let the POS/KDS hold it in its own pending
+    queue rather than pushing it live immediately, e.g.
+        pos_client.create_scheduled_order(table_id=reservation.assigned_table_id, items=items,
+                                           fire_at=reservation.start_time)
+    so kitchen staff see it appear right around arrival, not the moment it's placed, and never
+    confuse it with whoever is sitting at that table right now.
+    """
+    if reservation.status != ReservationStatus.BOOKED:
+        raise PreorderError("Only an upcoming booked reservation can have a pre-order attached")
+
+    # Merge into whatever was already ordered for this reservation (by name) instead of
+    # overwriting, so sending the cart a second time adds to the order rather than losing it.
+    merged: dict[str, dict] = {i["name"]: dict(i) for i in (reservation.preorder_items or [])}
+    for item in items:
+        existing = merged.get(item["name"])
+        if existing:
+            existing["quantity"] += item["quantity"]
+            existing["price"] = item["price"]
+        else:
+            merged[item["name"]] = dict(item)
+
+    reservation.preorder_items = list(merged.values())
+    reservation.preorder_requested_at = datetime.now(reservation.start_time.tzinfo)
+    await _log_event(
+        session,
+        reservation.id,
+        ReservationEventType.PREORDER_REQUESTED.value,
+        {"items": items},
+    )
+    await session.commit()
     return reservation
 
 

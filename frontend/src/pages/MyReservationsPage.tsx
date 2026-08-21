@@ -1,6 +1,7 @@
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import { useQuery } from "@tanstack/react-query"
-import { CalendarBlank, Clock, Users, XCircle } from "@phosphor-icons/react"
+import { CalendarBlank, CaretDown, Check, Clock, Copy, ForkKnife, Users, XCircle } from "@phosphor-icons/react"
 import { useMyReservations, useCancelReservation } from "../hooks/useReservation"
 import { getRestaurants, type Reservation } from "../lib/api"
 import { formatFullDate, formatSlotTime, toDayKey } from "../lib/time"
@@ -26,6 +27,16 @@ function ReservationCard({
   onCancel: () => void
   isCancelling: boolean
 }) {
+  const [copied, setCopied] = useState(false)
+  const [orderOpen, setOrderOpen] = useState(false)
+
+  function handleCopyId() {
+    navigator.clipboard.writeText(reservation.id).then(() => {
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    })
+  }
+
   return (
     <div className="rounded-[1.75rem] bg-ink-900/[0.04] p-1.5 ring-1 ring-ink-900/5">
       <div className="rounded-[calc(1.75rem-0.375rem)] border border-ink-900/8 bg-parchment-100 p-5">
@@ -55,6 +66,67 @@ function ReservationCard({
             {reservation.party_size} guests
           </span>
         </div>
+
+        <button
+          type="button"
+          onClick={handleCopyId}
+          className="mt-3 flex items-center gap-1.5 rounded-lg border border-ink-900/8 bg-ink-900/[0.03] px-2.5 py-1.5 font-mono text-[11px] text-ink-600 transition-colors hover:border-ember-400/50"
+          title="Copy reservation ID — use it to have food ready when you arrive"
+        >
+          {copied ? (
+            <Check size={12} className="shrink-0 text-moss-500" weight="bold" />
+          ) : (
+            <Copy size={12} className="shrink-0" weight="light" />
+          )}
+          <span className="truncate">{reservation.id}</span>
+        </button>
+
+        {reservation.preorder_items && reservation.preorder_items.length > 0 && (
+          <div className="mt-3 rounded-xl border border-moss-500/20 bg-moss-500/5">
+            <button
+              type="button"
+              onClick={() => setOrderOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-2 px-3 py-2 text-xs text-moss-500"
+            >
+              <span className="flex items-center gap-1.5">
+                <ForkKnife size={13} weight="light" />
+                Food pre-order — {reservation.preorder_items.length} item
+                {reservation.preorder_items.length === 1 ? "" : "s"} · {" "}
+                {reservation.preorder_items
+                  .reduce((sum, i) => sum + i.quantity * i.price, 0)
+                  .toFixed(2)}{" "}
+                ₼
+              </span>
+              <motion.span animate={{ rotate: orderOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <CaretDown size={12} weight="bold" />
+              </motion.span>
+            </button>
+            <AnimatePresence initial={false}>
+              {orderOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <ul className="space-y-1 px-3 pb-3 text-xs text-ink-700">
+                    {reservation.preorder_items.map((item, i) => (
+                      <li key={i} className="flex items-center justify-between gap-3">
+                        <span>
+                          {item.quantity}× {item.name}
+                        </span>
+                        <span className="font-mono text-ink-600">
+                          {(item.quantity * item.price).toFixed(2)} ₼
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         {reservation.status === "booked" && (
           <button
