@@ -13,6 +13,7 @@ class ReservationCreate(BaseModel):
     guest_phone: str = Field(min_length=1, max_length=50)
     party_size: int = Field(ge=1, le=4)
     start_time: datetime
+    table_id: int | None = None
     idempotency_key: str = Field(min_length=1, max_length=100)
 
 
@@ -37,9 +38,21 @@ class ReservationOut(BaseModel):
         from_attributes = True
 
 
+class AvailableTable(BaseModel):
+    id: int
+    table_number: str
+    zone: str
+    seats: int
+    pos_x: int
+    pos_y: int
+    fits: bool
+    available: bool
+
+
 class AvailabilitySlot(BaseModel):
     time: datetime
     available_count: int
+    tables: list[AvailableTable]
 
 
 class AvailabilityQuery(BaseModel):

@@ -38,12 +38,12 @@ export function useAvailability(restaurantId: number, day: string, partySize: nu
       socketRef.current = socket
 
       socket.onmessage = (event) => {
-        const patch = JSON.parse(event.data) as { time: string; category: TableCategory; available_count: number }
+        const patch = JSON.parse(event.data) as AvailabilitySlot & { category: TableCategory }
         if (patch.category !== category) return
         queryClient.setQueryData<AvailabilitySlot[]>(availabilityKey(restaurantId, day, partySize), (current) => {
           if (!current) return current
           return current.map((slot) =>
-            slot.time === patch.time ? { ...slot, available_count: patch.available_count } : slot,
+            slot.time === patch.time ? { ...slot, available_count: patch.available_count, tables: patch.tables } : slot,
           )
         })
       }

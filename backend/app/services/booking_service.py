@@ -61,13 +61,18 @@ def _schedule_reminders(reservation_id: UUID, start_time: datetime) -> None:
 
 
 async def _broadcast_range(
-    session: AsyncSession, restaurant_id: int, category: TableCategory, start_time: datetime, end_time: datetime
+    session: AsyncSession, restaurant_id: int, start_time: datetime, end_time: datetime
 ) -> None:
+    """Push the affected slots to every watcher. Both party-size views are broadcast, not just
+    the booked table's own: each payload carries the whole dining room, so a client picking
+    2-seaters still needs to see a 4-seater go dark on its floor plan.
+    """
     day = start_time.date()
-    slots = await availability_service.get_slots_for_category(session, restaurant_id, category, day)
-    for slot in slots:
-        if start_time <= slot["time"] < end_time:
-            await broadcast_slot_update(restaurant_id, day, category, slot)
+    for slot_category in TableCategory:
+        slots = await availability_service.get_slots_for_category(session, restaurant_id, slot_category, day)
+        for slot in slots:
+            if start_time <= slot["time"] < end_time:
+                await broadcast_slot_update(restaurant_id, day, slot_category, slot)
 
 
 def _check_booking_window(day: date, tzinfo) -> None:
@@ -117,6 +122,7 @@ async def create_reservation(
     party_size: int,
     start_time: datetime,
     idempotency_key: str,
+    table_id: int | None = None,
 ) -> Reservation:
     existing = await session.scalar(
         select(Reservation).where(Reservation.idempotency_key == idempotency_key)
@@ -147,6 +153,7 @@ async def create_reservation(
             DiningTable.restaurant_id == restaurant_id,
             DiningTable.category == category,
             DiningTable.is_active.is_(True),
+            *( [DiningTable.id == table_id] if table_id is not None else [] ),
             ~overlap_exists,
         )
         .order_by(DiningTable.id)
@@ -155,7 +162,7 @@ async def create_reservation(
     )
     if table is None:
         await session.rollback()
-        raise BookingConflictError("No tables available for this time and party size")
+        raise BookingConflictError("Selected table is unavailable for this time and party size")
 
     reservation = Reservation(
         restaurant_id=restaurant_id,
@@ -191,7 +198,7 @@ async def create_reservation(
             return existing
         raise
 
-    await _broadcast_range(session, restaurant_id, category, start_time, end_time)
+    await _broadcast_range(session, restaurant_id, start_time, end_time)
     _schedule_reminders(reservation.id, start_time)
     return reservation
 
@@ -206,7 +213,7 @@ async def cancel_reservation(session: AsyncSession, reservation: Reservation, re
     )
     await session.commit()
     await _broadcast_range(
-        session, reservation.restaurant_id, reservation.table_category, reservation.start_time, reservation.end_time
+        session, reservation.restaurant_id, reservation.start_time, reservation.end_time
     )
     return reservation
 
@@ -219,7 +226,7 @@ async def mark_no_show(session: AsyncSession, reservation: Reservation) -> Reser
     await _log_event(session, reservation.id, ReservationEventType.STATUS_CHANGED.value, {"status": "no_show"})
     await session.commit()
     await _broadcast_range(
-        session, reservation.restaurant_id, reservation.table_category, reservation.start_time, reservation.end_time
+        session, reservation.restaurant_id, reservation.start_time, reservation.end_time
     )
     return reservation
 
@@ -243,9 +250,7 @@ async def complete_early(session: AsyncSession, reservation: Reservation, comple
         {"status": "completed", "completed_at": completed_at.isoformat()},
     )
     await session.commit()
-    await _broadcast_range(
-        session, reservation.restaurant_id, reservation.table_category, completed_at, reservation.end_time
-    )
+    await _broadcast_range(session, reservation.restaurant_id, completed_at, reservation.end_time)
     return reservation
 
 
@@ -283,7 +288,7 @@ async def revert_status(session: AsyncSession, reservation: Reservation) -> Rese
     )
     await session.commit()
     await _broadcast_range(
-        session, reservation.restaurant_id, reservation.table_category, reservation.start_time, reservation.end_time
+        session, reservation.restaurant_id, reservation.start_time, reservation.end_time
     )
     return reservation
 
@@ -322,7 +327,5 @@ async def delay_reservation(session: AsyncSession, reservation: Reservation, min
         {"minutes": minutes, "old_start": old_start.isoformat(), "new_start": new_start.isoformat()},
     )
     await session.commit()
-    await _broadcast_range(
-        session, reservation.restaurant_id, reservation.table_category, old_start, max(old_end, new_end)
-    )
+    await _broadcast_range(session, reservation.restaurant_id, old_start, max(old_end, new_end))
     return reservation
