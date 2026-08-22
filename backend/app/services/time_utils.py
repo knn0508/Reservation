@@ -17,6 +17,16 @@ def category_for_party_size(party_size: int) -> str:
     return TableCategory.SEATER_2 if party_size <= 2 else TableCategory.SEATER_4
 
 
+def tables_needed_for_party_size(party_size: int) -> int:
+    """How many tables of category_for_party_size(party_size) must be merged to seat this
+    party. 2-seaters always seat one party; 4-seaters merge (ceil(party_size / 4)) tables
+    for parties larger than four - e.g. 7 guests -> two merged four-tops.
+    """
+    if party_size <= 2:
+        return 1
+    return -(-party_size // 4)
+
+
 def floor_to_bucket(dt: datetime) -> datetime:
     minutes = (dt.minute // settings.bucket_minutes) * settings.bucket_minutes
     return dt.replace(minute=0, second=0, microsecond=0) + timedelta(minutes=minutes)

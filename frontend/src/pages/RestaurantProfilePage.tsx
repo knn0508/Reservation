@@ -131,7 +131,14 @@ export function RestaurantProfilePage() {
             <div className="mt-9 grid gap-4 sm:grid-cols-2">
               <div className="flex items-start gap-3">
                 <MapPin size={18} weight="light" className="mt-0.5 shrink-0 text-ember-600" />
-                <span className="text-sm text-ink-600">{content.address}</span>
+                <a
+                  href="https://maps.app.goo.gl/rXMxNHUJXm9QgdTr6"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-ink-600 underline hover:no-underline"
+                >
+                  {content.address}
+                </a>
               </div>
               <div className="flex items-start gap-3">
                 <Clock size={18} weight="light" className="mt-0.5 shrink-0 text-ember-600" />

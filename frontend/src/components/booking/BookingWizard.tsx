@@ -8,7 +8,7 @@ import { ConfirmationCard } from "./ConfirmationCard"
 import { useAvailability } from "../../hooks/useAvailability"
 import { useCreateReservation } from "../../hooks/useReservation"
 import { useAuth } from "../../hooks/useAuth"
-import { toDayKey } from "../../lib/time"
+import { defaultBookableDay } from "../../lib/time"
 import { ApiError } from "../../lib/api"
 
 type Step = "date" | "party" | "time" | "done"
@@ -24,7 +24,7 @@ const variants = {
 export function BookingWizard({ restaurantId }: { restaurantId: number }) {
   const { user } = useAuth()
   const [step, setStep] = useState<Step>("date")
-  const [day, setDay] = useState(() => toDayKey(new Date()))
+  const [day, setDay] = useState(() => defaultBookableDay())
   const [partySize, setPartySize] = useState<number | null>(null)
   const [idempotencyKey] = useState(() => crypto.randomUUID())
 
@@ -103,8 +103,9 @@ export function BookingWizard({ restaurantId }: { restaurantId: number }) {
             <div>
               <PartySizeStep
                 value={partySize}
-                onChange={(size) => {
-                  setPartySize(size)
+                onChange={(size) => setPartySize(size)}
+                onContinue={() => {
+                  setPartySize((prev) => prev ?? 2)
                   goTo("time")
                 }}
               />

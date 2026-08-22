@@ -44,6 +44,7 @@ export interface Reservation {
   end_time: string
   status: ReservationStatus
   assigned_table_id: number
+  merged_table_ids: number[] | null
   preorder_items: PreorderItem[] | null
   preorder_requested_at: string | null
 }

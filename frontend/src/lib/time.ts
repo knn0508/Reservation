@@ -39,10 +39,29 @@ export function formatShortDate(dayKey: string): { weekday: string; day: string 
   return { weekday, day }
 }
 
+/** Local hour (0-23) in the restaurant's timezone, right now. */
+function currentHourInRestaurantTz(): number {
+  return Number(
+    new Intl.DateTimeFormat("en-GB", { timeZone: RESTAURANT_TZ, hour: "2-digit", hour12: false }).format(new Date()),
+  )
+}
+
+/** Today's day-key, unless it's past 21:00 restaurant time - then tomorrow's. */
+export function defaultBookableDay(): string {
+  const now = new Date()
+  if (currentHourInRestaurantTz() >= 21) {
+    now.setDate(now.getDate() + 1)
+  }
+  return toDayKey(now)
+}
+
 export function nextNDays(n: number): string[] {
   const out: string[] = []
   const now = new Date()
-  for (let i = 0; i < n; i++) {
+  // Past 21:00 there's too little of today's service left to bother offering it - start the
+  // strip from tomorrow instead.
+  const startOffset = currentHourInRestaurantTz() >= 21 ? 1 : 0
+  for (let i = startOffset; i < startOffset + n; i++) {
     const d = new Date(now)
     d.setDate(d.getDate() + i)
     out.push(toDayKey(d))

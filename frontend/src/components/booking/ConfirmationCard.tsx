@@ -31,7 +31,12 @@ export function ConfirmationCard({ reservation }: { reservation: Reservation }) 
         </div>
         <div className="flex items-center gap-3 text-sm">
           <Users size={17} className="shrink-0 text-ember-600" />
-          <span className="text-ink-800">{reservation.party_size} guests</span>
+          <span className="text-ink-800">
+            {reservation.party_size} guests
+            {reservation.merged_table_ids && reservation.merged_table_ids.length > 0 && (
+              <span className="text-ink-600"> — {reservation.merged_table_ids.length + 1} tables merged</span>
+            )}
+          </span>
         </div>
         <div className="flex items-center gap-3 text-sm">
           <Hash size={17} className="shrink-0 text-ember-600" />

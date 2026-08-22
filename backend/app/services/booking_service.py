@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy import exists, or_, select
+from sqlalchemy import any_, exists, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,10 +11,26 @@ from app.models.enums import ReservationEventType, ReservationStatus, TableCateg
 from app.models.reservation import Reservation
 from app.models.reservation_event import ReservationEvent
 from app.services import availability_service
-from app.services.time_utils import category_for_party_size, end_time_for
+from app.services.time_utils import category_for_party_size, end_time_for, tables_needed_for_party_size
 from app.ws.manager import broadcast_slot_update
 
 _ACTIVE_STATUSES = (ReservationStatus.BOOKED, ReservationStatus.SEATED)
+
+
+def _table_overlap_exists(table_id_col, start_time: datetime, end_time: datetime):
+    """True if some active reservation already occupies this table (as its primary table or
+    as one of its merged tables) during the given window."""
+    return exists(
+        select(Reservation.id).where(
+            Reservation.status.in_(_ACTIVE_STATUSES),
+            Reservation.start_time < end_time,
+            Reservation.end_time > start_time,
+            or_(
+                Reservation.assigned_table_id == table_id_col,
+                table_id_col == any_(Reservation.merged_table_ids),
+            ),
+        )
+    )
 
 
 class BookingConflictError(Exception):
@@ -137,30 +153,33 @@ async def create_reservation(
 
     # Lock candidate tables one row at a time (SKIP LOCKED) so concurrent bookings for the
     # same restaurant/category/window serialize on table rows instead of racing a read-then-write.
-    overlap_exists = exists(
-        select(Reservation.id).where(
-            Reservation.assigned_table_id == DiningTable.id,
-            Reservation.status.in_(_ACTIVE_STATUSES),
-            Reservation.start_time < end_time,
-            Reservation.end_time > start_time,
+    # Parties bigger than one table's capacity merge several same-category tables (e.g. a
+    # party of 7 -> two merged four-tops) - tables_needed is 1 for the common case.
+    tables_needed = tables_needed_for_party_size(party_size)
+    tables = (
+        await session.scalars(
+            select(DiningTable)
+            .where(
+                DiningTable.restaurant_id == restaurant_id,
+                DiningTable.category == category,
+                DiningTable.is_active.is_(True),
+                ~_table_overlap_exists(DiningTable.id, start_time, end_time),
+            )
+            .order_by(DiningTable.id)
+            .with_for_update(skip_locked=True)
+            .limit(tables_needed)
         )
-    )
-    table = await session.scalar(
-        select(DiningTable)
-        .where(
-            DiningTable.restaurant_id == restaurant_id,
-            DiningTable.category == category,
-            DiningTable.is_active.is_(True),
-            ~overlap_exists,
-        )
-        .order_by(DiningTable.id)
-        .with_for_update(skip_locked=True)
-        .limit(1)
-    )
-    if table is None:
+    ).all()
+    if len(tables) < tables_needed:
         await session.rollback()
+        if tables_needed > 1:
+            raise BookingConflictError(
+                f"Seating {party_size} guests needs {tables_needed} four-seat tables merged - "
+                "not enough are free at this time"
+            )
         raise BookingConflictError("No tables available for this time and party size")
 
+    primary, *merged = tables
     reservation = Reservation(
         restaurant_id=restaurant_id,
         user_id=user_id,
@@ -172,7 +191,8 @@ async def create_reservation(
         start_time=start_time,
         end_time=end_time,
         status=ReservationStatus.BOOKED,
-        assigned_table_id=table.id,
+        assigned_table_id=primary.id,
+        merged_table_ids=[t.id for t in merged] or None,
         idempotency_key=idempotency_key,
     )
     session.add(reservation)
@@ -181,7 +201,12 @@ async def create_reservation(
         session,
         reservation.id,
         ReservationEventType.CREATED.value,
-        {"party_size": party_size, "start_time": start_time.isoformat(), "assigned_table_id": table.id},
+        {
+            "party_size": party_size,
+            "start_time": start_time.isoformat(),
+            "assigned_table_id": primary.id,
+            "merged_table_ids": reservation.merged_table_ids,
+        },
     )
 
     try:
@@ -263,14 +288,18 @@ async def revert_status(session: AsyncSession, reservation: Reservation) -> Rese
         raise RevertError(f"A {reservation.status.value} reservation can't be undone")
 
     if target in _ACTIVE_STATUSES:
+        own_table_ids = [reservation.assigned_table_id, *(reservation.merged_table_ids or [])]
         conflict = await session.scalar(
             select(Reservation.id)
             .where(
-                Reservation.assigned_table_id == reservation.assigned_table_id,
                 Reservation.id != reservation.id,
                 Reservation.status.in_(_ACTIVE_STATUSES),
                 Reservation.start_time < reservation.end_time,
                 Reservation.end_time > reservation.start_time,
+                or_(
+                    Reservation.assigned_table_id.in_(own_table_ids),
+                    Reservation.merged_table_ids.overlap(own_table_ids),
+                ),
             )
             .with_for_update()
         )
@@ -362,14 +391,18 @@ async def delay_reservation(session: AsyncSession, reservation: Reservation, min
     new_start = old_start + timedelta(minutes=minutes)
     new_end = end_time_for(new_start)
 
+    own_table_ids = [reservation.assigned_table_id, *(reservation.merged_table_ids or [])]
     conflict = await session.scalar(
         select(Reservation.id)
         .where(
-            Reservation.assigned_table_id == reservation.assigned_table_id,
             Reservation.id != reservation.id,
             Reservation.status.in_(_ACTIVE_STATUSES),
             Reservation.start_time < new_end,
             Reservation.end_time > new_start,
+            or_(
+                Reservation.assigned_table_id.in_(own_table_ids),
+                Reservation.merged_table_ids.overlap(own_table_ids),
+            ),
         )
         .with_for_update()
     )

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, FetchedValue, ForeignKey, Integer, String
+from sqlalchemy import ARRAY, CheckConstraint, DateTime, Enum, FetchedValue, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -14,7 +14,7 @@ from app.models.enums import ReservationStatus, TableCategory
 class Reservation(Base):
     __tablename__ = "reservation"
     __table_args__ = (
-        CheckConstraint("party_size >= 1 AND party_size <= 4", name="chk_party_limit"),
+        CheckConstraint("party_size >= 1", name="chk_party_limit"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -41,6 +41,10 @@ class Reservation(Base):
     assigned_table_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("dining_table.id"), nullable=False
     )
+    # Extra 4-seater tables merged onto assigned_table_id for parties larger than one table's
+    # capacity (e.g. party of 7 -> assigned_table_id + one merged table). Null/empty when the
+    # party fit on a single table.
+    merged_table_ids: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
     idempotency_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     # Set when the guest asks for their cart to be prepared and ready for their arrival time.
     # A future POS integration would read this to auto-create the kitchen order for the

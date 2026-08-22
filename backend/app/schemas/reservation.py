@@ -11,7 +11,7 @@ class ReservationCreate(BaseModel):
     guest_name: str = Field(min_length=1, max_length=100)
     guest_email: EmailStr
     guest_phone: str = Field(min_length=1, max_length=50)
-    party_size: int = Field(ge=1, le=4)
+    party_size: int = Field(ge=1, le=40)
     start_time: datetime
     idempotency_key: str = Field(min_length=1, max_length=100)
 
@@ -43,6 +43,7 @@ class ReservationOut(BaseModel):
     end_time: datetime
     status: ReservationStatus
     assigned_table_id: int
+    merged_table_ids: list[int] | None = None
     preorder_items: list[PreorderItem] | None = None
     preorder_requested_at: datetime | None = None
 
@@ -57,12 +58,12 @@ class AvailabilitySlot(BaseModel):
 
 class AvailabilityQuery(BaseModel):
     date: str
-    party_size: int = Field(ge=1, le=4)
+    party_size: int = Field(ge=1, le=40)
 
 
 class HoldCreate(BaseModel):
     restaurant_id: int
-    party_size: int = Field(ge=1, le=4)
+    party_size: int = Field(ge=1, le=40)
     start_time: datetime
 
 
