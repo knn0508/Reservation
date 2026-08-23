@@ -25,3 +25,16 @@ class ReservationEventType(str, enum.Enum):
 class UserRole(str, enum.Enum):
     CUSTOMER = "customer"
     ADMIN = "admin"
+
+
+class MenuGroup(str, enum.Enum):
+    FOOD = "food"
+    BAR = "bar"
+
+
+class SaleChannel(str, enum.Enum):
+    # Placed through this app ahead of arrival (Reservation.preorder_items).
+    ONLINE = "online"
+    # Ordered in person at the restaurant - today this is synthetic/manual data; once a POS
+    # exists it becomes the real feed for this channel.
+    RESTAURANT = "restaurant"

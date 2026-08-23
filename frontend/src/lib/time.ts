@@ -31,6 +31,18 @@ export function formatFullDate(dayKey: string): string {
   }).format(date)
 }
 
+/** Formats a dashboard series period ("2026-08-01" or "2026-08") as a short axis label. */
+export function formatPeriodLabel(period: string, granularity: "day" | "month"): string {
+  if (granularity === "month") {
+    const [y, m] = period.split("-").map(Number)
+    const date = new Date(Date.UTC(y, m - 1, 1, 12))
+    return new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }).format(date)
+  }
+  const [y, m, d] = period.split("-").map(Number)
+  const date = new Date(Date.UTC(y, m - 1, d, 12))
+  return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(date)
+}
+
 export function formatShortDate(dayKey: string): { weekday: string; day: string } {
   const [y, m, d] = dayKey.split("-").map(Number)
   const date = new Date(Date.UTC(y, m - 1, d, 12))

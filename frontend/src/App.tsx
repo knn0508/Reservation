@@ -10,6 +10,7 @@ import { SignupPage } from "./pages/SignupPage"
 import { AdminLoginPage } from "./pages/AdminLoginPage"
 import { MyReservationsPage } from "./pages/MyReservationsPage"
 import { AdminPage } from "./pages/AdminPage"
+import { AdminDashboard } from "./pages/AdminDashboard"
 
 function App() {
   const location = useLocation()
@@ -50,6 +51,14 @@ function App() {
           element={
             <RequireAuth role="admin">
               <AdminPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <RequireAuth role="admin">
+              <AdminDashboard />
             </RequireAuth>
           }
         />

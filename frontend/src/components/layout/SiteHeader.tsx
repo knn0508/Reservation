@@ -46,7 +46,12 @@ export function SiteHeader() {
 
           <nav className="hidden items-center gap-7 md:flex">
             {user?.role === "admin" ? (
-              <NavItem to="/admin">Floor</NavItem>
+              <>
+                <NavItem to="/admin" end>
+                  Floor
+                </NavItem>
+                <NavItem to="/admin/dashboard">Dashboard</NavItem>
+              </>
             ) : (
               <>
                 <NavItem to="/" end>
@@ -117,7 +122,10 @@ export function SiteHeader() {
           >
             <div className="flex h-full flex-col items-center justify-center gap-7">
               {(user?.role === "admin"
-                ? [{ to: "/admin", label: "Floor", end: false }]
+                ? [
+                    { to: "/admin", label: "Floor", end: true },
+                    { to: "/admin/dashboard", label: "Dashboard", end: false },
+                  ]
                 : [
                     { to: "/", label: "Restaurants", end: true },
                     { to: "/my-reservation", label: "My Reservation", end: false },

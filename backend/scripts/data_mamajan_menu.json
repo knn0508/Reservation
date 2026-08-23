@@ -1,0 +1,1554 @@
+[
+ {
+  "name": "Şorbalar",
+  "group": "food",
+  "items": [
+   {
+    "name": "Xarço",
+    "price": 9.0
+   },
+   {
+    "name": "Toyuq Şorbası",
+    "price": 8.0
+   },
+   {
+    "name": "Düşbərə Şorbası",
+    "price": 8.0
+   },
+   {
+    "name": "Göbələk Şorbası",
+    "price": 7.0
+   }
+  ]
+ },
+ {
+  "name": "Salatlar",
+  "group": "food",
+  "items": [
+   {
+    "name": "Pomidor Salatı Zoğal Sousunda",
+    "price": 9.0
+   },
+   {
+    "name": "Papajan Salatı",
+    "price": 15.0
+   },
+   {
+    "name": "Manqal Salatı",
+    "price": 8.0
+   },
+   {
+    "name": "Gürcü Salatı",
+    "price": 9.0
+   },
+   {
+    "name": "Mamajan Salatı",
+    "price": 16.0
+   },
+   {
+    "name": "Mamajan Badımcan Salatı",
+    "price": 11.0
+   },
+   {
+    "name": "Mamajan Badımcan Salatı (Böyük)",
+    "price": 14.0
+   },
+   {
+    "name": "Sezar Salatı",
+    "price": 9.0
+   },
+   {
+    "name": "Gürcüsayağı Toyuq Salatı",
+    "price": 9.0
+   },
+   {
+    "name": "Acılı Ət Salatı",
+    "price": 12.0
+   },
+   {
+    "name": "Çoban Salatı",
+    "price": 8.0
+   },
+   {
+    "name": "Olivye Salatı",
+    "price": 9.0
+   },
+   {
+    "name": "Dil Salatı",
+    "price": 11.0
+   }
+  ]
+ },
+ {
+  "name": "Soyuq Qəlyanaltılar",
+  "group": "food",
+  "items": [
+   {
+    "name": "Soyuq Qəlyanaltı Seti",
+    "price": 35.0
+   },
+   {
+    "name": "Ajabsandali",
+    "price": 9.0
+   },
+   {
+    "name": "Tərəvəz Buketi",
+    "price": 8.0
+   },
+   {
+    "name": "Pxali Assorti",
+    "price": 9.0
+   },
+   {
+    "name": "Turşu Assorti",
+    "price": 9.0
+   },
+   {
+    "name": "Ət Assorti",
+    "price": 20.0
+   },
+   {
+    "name": "Suluquni",
+    "price": 8.0
+   },
+   {
+    "name": "Naduqi",
+    "price": 8.0
+   },
+   {
+    "name": "Saçivi",
+    "price": 11.0
+   },
+   {
+    "name": "Mamajan Badımcan Ruleti",
+    "price": 9.0
+   },
+   {
+    "name": "Qozlu Lobya",
+    "price": 9.0
+   },
+   {
+    "name": "Zeytun",
+    "price": 7.0
+   },
+   {
+    "name": "Süzmə",
+    "price": 6.0
+   },
+   {
+    "name": "Gürcü Rollu Baje Sousunda",
+    "price": 10.0
+   },
+   {
+    "name": "Pendir Assorti",
+    "price": 14.0
+   },
+   {
+    "name": "Səhər Yeməyi 2 Nəfər",
+    "price": 28.0
+   },
+   {
+    "name": "Səhər Yeməyi 4 Nəfər",
+    "price": 52.0
+   }
+  ]
+ },
+ {
+  "name": "Ət Yeməkləri",
+  "group": "food",
+  "items": [
+   {
+    "name": "Ocaxuri Acar",
+    "price": 20.0
+   },
+   {
+    "name": "Tibilisuri",
+    "price": 16.0
+   },
+   {
+    "name": "Abxazuri",
+    "price": 14.0
+   },
+   {
+    "name": "Çaxapuli",
+    "price": 17.0
+   },
+   {
+    "name": "Arabuli",
+    "price": 17.0
+   },
+   {
+    "name": "Kupati",
+    "price": 14.0
+   },
+   {
+    "name": "Albalı Sousunda Can Əti",
+    "price": 19.0
+   },
+   {
+    "name": "Gürcü Solyanka",
+    "price": 14.0
+   },
+   {
+    "name": "Ocaxuri (Ət ilə)",
+    "price": 16.0
+   },
+   {
+    "name": "Ocaxuri (Donuz Əti ilə)",
+    "price": 12.0
+   },
+   {
+    "name": "Acikalı Quzu Qabırğası",
+    "price": 19.0
+   },
+   {
+    "name": "Südlü Suluqunidə Şampinyon",
+    "price": 12.0
+   },
+   {
+    "name": "Sobada Suluquni",
+    "price": 12.0
+   },
+   {
+    "name": "Saxsı Qabda Lobya",
+    "price": 10.0
+   },
+   {
+    "name": "Çaşuşuli (Mal əti)",
+    "price": 14.0
+   },
+   {
+    "name": "Şefin Yeməyi",
+    "price": 20.0
+   },
+   {
+    "name": "Ocaxuri (Göbələk ilə)",
+    "price": 11.0
+   },
+   {
+    "name": "Krevetka Çkmeruli Sousunda",
+    "price": 18.0
+   },
+   {
+    "name": "Xaça Burger",
+    "price": 14.0
+   }
+  ]
+ },
+ {
+  "name": "Toyuq Yeməkləri",
+  "group": "food",
+  "items": [
+   {
+    "name": "Mamajan Burger",
+    "price": 12.0
+   },
+   {
+    "name": "Çolpa Tkemali Sousunda",
+    "price": 18.0
+   },
+   {
+    "name": "Çaxoxbili",
+    "price": 14.0
+   },
+   {
+    "name": "Gürcüsayağı Tabaka",
+    "price": 16.0
+   },
+   {
+    "name": "Kupati (Toyuq)",
+    "price": 12.0
+   },
+   {
+    "name": "Çkmeruli",
+    "price": 17.0
+   },
+   {
+    "name": "Ocaxuri (Toyuq)",
+    "price": 12.0
+   },
+   {
+    "name": "Kuçmaçi",
+    "price": 12.0
+   },
+   {
+    "name": "Toyuq Langet",
+    "price": 9.0
+   },
+   {
+    "name": "Naggets",
+    "price": 8.0
+   },
+   {
+    "name": "Sulugunidə Bişmiş Gürcüsayağı Toyuq",
+    "price": 18.0
+   }
+  ]
+ },
+ {
+  "name": "Balıq Yeməkləri",
+  "group": "food",
+  "items": [
+   {
+    "name": "Sudak Tava",
+    "price": 17.0
+   },
+   {
+    "name": "Sudak Manqalda",
+    "price": 17.0
+   },
+   {
+    "name": "Tavada Dorado",
+    "price": 15.0
+   },
+   {
+    "name": "Hisə Verilmiş Dorado",
+    "price": 15.0
+   },
+   {
+    "name": "Forel Tava",
+    "price": 14.0
+   },
+   {
+    "name": "Forel Manqal",
+    "price": 14.0
+   },
+   {
+    "name": "Zoğal Sousunda Forel",
+    "price": 15.0
+   },
+   {
+    "name": "Beluqa Manqal",
+    "price": 28.0
+   },
+   {
+    "name": "Syomqa Tava",
+    "price": 20.0
+   },
+   {
+    "name": "Syomqa Manqal",
+    "price": 20.0
+   },
+   {
+    "name": "Zoğal Sousunda Forel (Manqal)",
+    "price": 15.0
+   }
+  ]
+ },
+ {
+  "name": "Qarnirlər",
+  "group": "food",
+  "items": [
+   {
+    "name": "Evsayağı Kartof",
+    "price": 6.0
+   },
+   {
+    "name": "Kartof Fri",
+    "price": 5.0
+   },
+   {
+    "name": "Meksikasayağı Kartof",
+    "price": 6.0
+   },
+   {
+    "name": "Düyü",
+    "price": 5.0
+   }
+  ]
+ },
+ {
+  "name": "Kabablar",
+  "group": "food",
+  "items": [
+   {
+    "name": "Çörəkdə Bişmiş Assorti Kabab 2 nəfər",
+    "price": 32.0
+   },
+   {
+    "name": "Çörəkdə Bişmiş Assorti Kabab 4 nəfər",
+    "price": 45.0
+   },
+   {
+    "name": "Lülə",
+    "price": 10.0
+   },
+   {
+    "name": "Gürcüsayağı Lülə (Donuz Əti)",
+    "price": 10.0
+   },
+   {
+    "name": "Toyuq Lülə",
+    "price": 8.0
+   },
+   {
+    "name": "Tikə Kabab",
+    "price": 10.0
+   },
+   {
+    "name": "Antrikot",
+    "price": 11.0
+   },
+   {
+    "name": "Toyuq Kababı",
+    "price": 8.0
+   },
+   {
+    "name": "Qanad Kabab",
+    "price": 7.0
+   },
+   {
+    "name": "Bastırma Kabab",
+    "price": 13.0
+   },
+   {
+    "name": "Donuz Eskolop",
+    "price": 16.0
+   },
+   {
+    "name": "Donuz Kababı",
+    "price": 10.0
+   },
+   {
+    "name": "Tərəvəz Kababı",
+    "price": 4.0
+   },
+   {
+    "name": "Quyruqlu Kartof Kababı",
+    "price": 8.0
+   },
+   {
+    "name": "Semeçka Kababı",
+    "price": 8.0
+   },
+   {
+    "name": "Dana Dili Kababı",
+    "price": 9.0
+   },
+   {
+    "name": "Mamajan Kababı",
+    "price": 12.0
+   },
+   {
+    "name": "Şaurma Kababı",
+    "price": 11.0
+   },
+   {
+    "name": "Hinduşka Kababı",
+    "price": 11.0
+   }
+  ]
+ },
+ {
+  "name": "Xəmir Yeməkləri",
+  "group": "food",
+  "items": [
+   {
+    "name": "Gürcü Qutabı",
+    "price": 6.0
+   },
+   {
+    "name": "Çeburek",
+    "price": 6.0
+   },
+   {
+    "name": "Xəngəl (Ət)",
+    "price": 1.6
+   },
+   {
+    "name": "Xəngəl (Göbələk)",
+    "price": 2.0
+   },
+   {
+    "name": "Xəngəl (Suluquni)",
+    "price": 2.0
+   },
+   {
+    "name": "Qızardılmış Xəngəl",
+    "price": 2.0
+   },
+   {
+    "name": "Xaçapuri Meqrel",
+    "price": 14.0
+   },
+   {
+    "name": "Xaçapuri İmereti",
+    "price": 15.0
+   },
+   {
+    "name": "Xaçapuri Acar",
+    "price": 14.0
+   },
+   {
+    "name": "Xaçapuri Qatqat",
+    "price": 15.0
+   },
+   {
+    "name": "Şişdə Xaçapuri",
+    "price": 16.0
+   },
+   {
+    "name": "Xaçapuri Lobiani",
+    "price": 13.0
+   },
+   {
+    "name": "Xaçapuri Mamajan",
+    "price": 17.0
+   },
+   {
+    "name": "Xaçapuri Kubdari",
+    "price": 17.0
+   },
+   {
+    "name": "Karolevski Xaçapuri",
+    "price": 19.0
+   },
+   {
+    "name": "Papajan & Mamajan",
+    "price": 19.0
+   },
+   {
+    "name": "Gürcüsayağı Pizza",
+    "price": 15.0
+   },
+   {
+    "name": "Çörək",
+    "price": 2.5
+   },
+   {
+    "name": "Pizza Margarita",
+    "price": 11.0
+   }
+  ]
+ },
+ {
+  "name": "Souslar",
+  "group": "food",
+  "items": [
+   {
+    "name": "Qırmızı Tkemali",
+    "price": 2.0
+   },
+   {
+    "name": "Yaşıl Tkemali",
+    "price": 2.0
+   },
+   {
+    "name": "Acika",
+    "price": 2.0
+   },
+   {
+    "name": "Qatığ",
+    "price": 2.0
+   },
+   {
+    "name": "Ketçup",
+    "price": 1.5
+   },
+   {
+    "name": "Mayonez",
+    "price": 1.5
+   }
+  ]
+ },
+ {
+  "name": "Desertlər",
+  "group": "food",
+  "items": [
+   {
+    "name": "Meyvə (kiçik)",
+    "price": 20.0
+   },
+   {
+    "name": "Meyvə (böyük)",
+    "price": 25.0
+   },
+   {
+    "name": "Mürəbbə Çiyələk",
+    "price": 6.0
+   },
+   {
+    "name": "Ləbləbi",
+    "price": 7.0
+   },
+   {
+    "name": "Çizkeyk",
+    "price": 7.0
+   },
+   {
+    "name": "Ballı Tort",
+    "price": 7.0
+   },
+   {
+    "name": "Mürəbbə Ağ Gilas",
+    "price": 6.0
+   },
+   {
+    "name": "Mürəbbə Moruq",
+    "price": 6.0
+   },
+   {
+    "name": "Südlü Paxlava",
+    "price": 8.0
+   },
+   {
+    "name": "Türk Paxlavası",
+    "price": 8.0
+   },
+   {
+    "name": "Ekler",
+    "price": 4.0
+   },
+   {
+    "name": "Çurçuxella",
+    "price": 8.0
+   },
+   {
+    "name": "Xaçapuri Qozlu",
+    "price": 10.0
+   }
+  ]
+ },
+ {
+  "name": "Sərin İçkilər",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Nataktari Limonad",
+    "price": 3.5
+   },
+   {
+    "name": "Badamlı Qazlı",
+    "price": 4.0
+   },
+   {
+    "name": "Badamlı Qazsız",
+    "price": 3.0
+   },
+   {
+    "name": "Barjomi",
+    "price": 4.0
+   },
+   {
+    "name": "Cola",
+    "price": 3.0
+   },
+   {
+    "name": "Cola Zero",
+    "price": 3.0
+   },
+   {
+    "name": "Fanta",
+    "price": 4.0
+   },
+   {
+    "name": "Sprite",
+    "price": 4.0
+   },
+   {
+    "name": "Evsayağı Limonad 0.2 Lt",
+    "price": 6.0
+   },
+   {
+    "name": "İce Tea Evsayağı",
+    "price": 5.0
+   },
+   {
+    "name": "Meyvə Şirəsi",
+    "price": 4.0
+   },
+   {
+    "name": "Portağal Freş",
+    "price": 8.0
+   },
+   {
+    "name": "Qarışıq Freş",
+    "price": 10.0
+   },
+   {
+    "name": "Kompot 1 Lt",
+    "price": 6.0
+   },
+   {
+    "name": "Redbull",
+    "price": 6.0
+   },
+   {
+    "name": "Alma Freş",
+    "price": 8.0
+   },
+   {
+    "name": "Zedazeni Limonad Düşes",
+    "price": 3.5
+   },
+   {
+    "name": "Zedazeni Limonad Tərxun",
+    "price": 3.5
+   },
+   {
+    "name": "Zedazeni Limonad Üzüm",
+    "price": 3.5
+   },
+   {
+    "name": "Zedazeni Limonad Qaymaqlı",
+    "price": 3.5
+   },
+   {
+    "name": "Evsayağı Limonad 1 Lt",
+    "price": 14.0
+   },
+   {
+    "name": "Kobi Qazlı",
+    "price": 4.0
+   },
+   {
+    "name": "Kobi Qazsız",
+    "price": 3.0
+   },
+   {
+    "name": "Təbii Nar Şirəsi",
+    "price": 5.0
+   },
+   {
+    "name": "Sairme Qazlı",
+    "price": 4.0
+   },
+   {
+    "name": "Sairme Qazsız",
+    "price": 3.0
+   },
+   {
+    "name": "Sirab Qazlı",
+    "price": 4.0
+   },
+   {
+    "name": "Sirab Qazsız",
+    "price": 3.0
+   },
+   {
+    "name": "İce Tea",
+    "price": 4.0
+   },
+   {
+    "name": "Ayran",
+    "price": 3.0
+   },
+   {
+    "name": "Təbii Nar Şirəsi 1 Lt",
+    "price": 12.0
+   },
+   {
+    "name": "Meyvə Şirəsi 1 Lt",
+    "price": 9.0
+   }
+  ]
+ },
+ {
+  "name": "İsti İçkilər",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Çay Dəstgahı",
+    "price": 25.0
+   },
+   {
+    "name": "Çay Çaynik",
+    "price": 5.0
+   },
+   {
+    "name": "Çay Fincan",
+    "price": 3.0
+   },
+   {
+    "name": "Jasmin Çayı",
+    "price": 7.0
+   },
+   {
+    "name": "Amerikano",
+    "price": 5.0
+   },
+   {
+    "name": "Yaşıl Çay",
+    "price": 6.0
+   },
+   {
+    "name": "Espresso",
+    "price": 5.0
+   },
+   {
+    "name": "Gürcü Qəhvəsi",
+    "price": 4.0
+   }
+  ]
+ },
+ {
+  "name": "Ev Çaçaları",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Xüsusi Çaça (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Xüsusi Çaça (50 Qr)",
+    "price": 5.0
+   },
+   {
+    "name": "Old Kaxeti Klassik (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Old Kaxeti Klassik (50 Qr)",
+    "price": 5.0
+   },
+   {
+    "name": "Old Kaxeti Palıd (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Palıdlı Çaça (50 Qr)",
+    "price": 5.0
+   },
+   {
+    "name": "Tərxunlu Çaça (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Tərxunlu Çaça (50 Qr)",
+    "price": 5.0
+   },
+   {
+    "name": "Ballı Çaça (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Ballı Çaça (50 Qr)",
+    "price": 5.0
+   },
+   {
+    "name": "Limonlu Çaça (0.5 Lt)",
+    "price": 35.0
+   },
+   {
+    "name": "Limonlu Çaça (50 Qr)",
+    "price": 5.0
+   }
+  ]
+ },
+ {
+  "name": "Pivələr",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Efes Draft",
+    "price": 5.0
+   },
+   {
+    "name": "Efes Pilsener",
+    "price": 5.0
+   },
+   {
+    "name": "Efes Zero",
+    "price": 4.0
+   },
+   {
+    "name": "Miller",
+    "price": 7.0
+   },
+   {
+    "name": "Heineken 0.5L",
+    "price": 7.0
+   },
+   {
+    "name": "Xırdalan 0.5L",
+    "price": 4.0
+   },
+   {
+    "name": "İcy Gürcü Pivəsi",
+    "price": 6.0
+   },
+   {
+    "name": "Xırdalan N/F 0.5L",
+    "price": 5.0
+   },
+   {
+    "name": "Kayaki Gürcü Pivəsi",
+    "price": 6.0
+   },
+   {
+    "name": "Corona",
+    "price": 7.0
+   },
+   {
+    "name": "Kazbegi Gürcü Pivəsi",
+    "price": 6.0
+   },
+   {
+    "name": "Heineken 0.33L",
+    "price": 6.0
+   }
+  ]
+ },
+ {
+  "name": "Çəllək Pivəsi",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Xırdalan N/F (Çəllək) 0.33 Lt",
+    "price": 3.5
+   },
+   {
+    "name": "Xırdalan Filtrsiz (Çəllək) 0.50 Lt",
+    "price": 5.0
+   },
+   {
+    "name": "Xırdalan (Çəllək) 0.33 Lt",
+    "price": 3.0
+   },
+   {
+    "name": "Xırdalan (Çəllək) 0.50 Lt",
+    "price": 5.0
+   }
+  ]
+ },
+ {
+  "name": "Ev Şərabları",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Saperavi 1 Lt",
+    "price": 35.0
+   },
+   {
+    "name": "Saperavi 0.2 Lt",
+    "price": 8.0
+   },
+   {
+    "name": "Rkatsiteli 1 Lt",
+    "price": 35.0
+   },
+   {
+    "name": "Rkatsiteli 0.2 Lt",
+    "price": 8.0
+   },
+   {
+    "name": "Kindsmarauli 1 Lt",
+    "price": 35.0
+   },
+   {
+    "name": "Kindsmarauli 0.2 Lt",
+    "price": 7.0
+   }
+  ]
+ },
+ {
+  "name": "Şərablar",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Marani Kindzmarauli 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "Marani Rkatsiteli 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "Marani Saperavi 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "Marani Tsinandali 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "İveriya Tsinandali 0.75 Lt",
+    "price": 28.0
+   },
+   {
+    "name": "İveriya Tvishi 0.75 Lt",
+    "price": 28.0
+   },
+   {
+    "name": "İveriya Saperavi 0.75 Lt",
+    "price": 28.0
+   },
+   {
+    "name": "İveriya Kindsmarauli 0.75 Lt",
+    "price": 28.0
+   },
+   {
+    "name": "İveriya Xvançkara 0.75 Lt",
+    "price": 28.0
+   },
+   {
+    "name": "Marani Xvançkara 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "Dugladze Rose 0.75 Lt",
+    "price": 30.0
+   },
+   {
+    "name": "Dugladze Mukuzani 5 Lt",
+    "price": 300.0
+   },
+   {
+    "name": "Dugladze Mukuzani 3 Lt",
+    "price": 200.0
+   }
+  ]
+ },
+ {
+  "name": "Pivə Qəlyanaltıları",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Saçaqlı Pendir",
+    "price": 5.0
+   },
+   {
+    "name": "Chips",
+    "price": 6.0
+   },
+   {
+    "name": "Qovrulmuş Püstə",
+    "price": 7.0
+   },
+   {
+    "name": "Qızardılmış Düşbərə",
+    "price": 6.0
+   },
+   {
+    "name": "Çipsi",
+    "price": 4.0
+   }
+  ]
+ },
+ {
+  "name": "Araq",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Stumbras 0.7 Lt",
+    "price": 55.0
+   },
+   {
+    "name": "Stumbras 0.5 Lt",
+    "price": 45.0
+   },
+   {
+    "name": "Stumbras 50 Qr",
+    "price": 5.0
+   },
+   {
+    "name": "Minsk 0.7 Lt",
+    "price": 39.0
+   },
+   {
+    "name": "Minsk 0.5 Lt",
+    "price": 29.0
+   },
+   {
+    "name": "Onegin 0.7 Lt",
+    "price": 80.0
+   },
+   {
+    "name": "Onegin 0.5 Lt",
+    "price": 65.0
+   },
+   {
+    "name": "ZernO 0.7 Lt",
+    "price": 40.0
+   },
+   {
+    "name": "ZernO 0.5 Lt",
+    "price": 35.0
+   },
+   {
+    "name": "Kirke Gürcü 0.7 Lt",
+    "price": 45.0
+   },
+   {
+    "name": "Kirke Gürcü 0.5 Lt",
+    "price": 35.0
+   },
+   {
+    "name": "Nemiroff Delikat 0.7 Lt",
+    "price": 50.0
+   },
+   {
+    "name": "Nemiroff Delikat 0.5 Lt",
+    "price": 40.0
+   },
+   {
+    "name": "Nemiroff Delikat 50 Qr",
+    "price": 5.0
+   },
+   {
+    "name": "Zerna Severa 0.7 Lt",
+    "price": 80.0
+   },
+   {
+    "name": "Zerna Severa 0.5 Lt",
+    "price": 60.0
+   },
+   {
+    "name": "Louvre 0.7 Lt",
+    "price": 60.0
+   },
+   {
+    "name": "Louvre 0.5 Lt",
+    "price": 50.0
+   },
+   {
+    "name": "Belaya Loşad 0.7 Lt",
+    "price": 45.0
+   },
+   {
+    "name": "Belaya Loşad 0.5 Lt",
+    "price": 35.0
+   }
+  ]
+ },
+ {
+  "name": "Tekila",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Olmeca Silver 0.7 Lt",
+    "price": 75.0
+   },
+   {
+    "name": "Olmeca Silver 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Olmeca Gold 0.7 Lt",
+    "price": 85.0
+   },
+   {
+    "name": "Olmeca Gold 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Patron 0.7 Lt",
+    "price": 130.0
+   }
+  ]
+ },
+ {
+  "name": "Viski",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Chivas 12 0.7 Lt",
+    "price": 90.0
+   },
+   {
+    "name": "Chivas 12 0.5 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Chivas 12 50 Qr",
+    "price": 8.0
+   },
+   {
+    "name": "Chivas 18 0.7 Lt",
+    "price": 150.0
+   },
+   {
+    "name": "Chivas 18 0.5 Lt",
+    "price": 110.0
+   },
+   {
+    "name": "Chivas 18 50 Qr",
+    "price": 15.0
+   },
+   {
+    "name": "Jameson 0.7 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Jameson 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Jack Daniel's 0.7 Lt",
+    "price": 75.0
+   },
+   {
+    "name": "Jack Daniel's 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Monkey Shoulders 0.7 Lt",
+    "price": 95.0
+   },
+   {
+    "name": "Monkey Shoulders 50 Qr",
+    "price": 9.0
+   }
+  ]
+ },
+ {
+  "name": "Cin",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Gordons 0.7 Lt",
+    "price": 80.0
+   },
+   {
+    "name": "Gordons 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Hendrick's 0.7 Lt",
+    "price": 80.0
+   },
+   {
+    "name": "Hendrick's 50 Qr",
+    "price": 10.0
+   }
+  ]
+ },
+ {
+  "name": "Aperativ",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Jagermeister 0.7 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Jagermeister 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Aperol 0.7 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Aperol 50 Qr",
+    "price": 5.0
+   },
+   {
+    "name": "Campari 0.7 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Campari 50 Qr",
+    "price": 5.0
+   }
+  ]
+ },
+ {
+  "name": "Şampan / Prosecco",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Martini Asti 0.75 Lt",
+    "price": 60.0
+   },
+   {
+    "name": "Montresor Prosecco 0.75 Lt",
+    "price": 60.0
+   }
+  ]
+ },
+ {
+  "name": "Konyak",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Sarajashvili V.S 0.7 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Sarajashvili V.S 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Sarajashvili V.S.O.P 0.7 Lt",
+    "price": 130.0
+   },
+   {
+    "name": "Sarajashvili V.S.O.P 50 Qr",
+    "price": 10.0
+   },
+   {
+    "name": "Sarajashvili X.O 0.7 Lt",
+    "price": 190.0
+   },
+   {
+    "name": "Sarajashvili X.O 50 Qr",
+    "price": 15.0
+   },
+   {
+    "name": "Tikhari 0.5 Lt",
+    "price": 40.0
+   },
+   {
+    "name": "Tikhari 50 Ml",
+    "price": 6.0
+   }
+  ]
+ },
+ {
+  "name": "Vermouth",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Martini Bianco 0.75 Lt",
+    "price": 60.0
+   },
+   {
+    "name": "Martini Bianco 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Martini Rosso 0.75 Lt",
+    "price": 60.0
+   },
+   {
+    "name": "Martini Rosso 50 Qr",
+    "price": 6.0
+   }
+  ]
+ },
+ {
+  "name": "Rum",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Bacardi 1 Lt",
+    "price": 90.0
+   },
+   {
+    "name": "Bacardi 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Captain Morgan 1 Lt",
+    "price": 90.0
+   },
+   {
+    "name": "Captain Morgan 50 Qr",
+    "price": 6.0
+   }
+  ]
+ },
+ {
+  "name": "Liquor",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Bailays 1 Lt",
+    "price": 140.0
+   },
+   {
+    "name": "Bailays 50 Qr",
+    "price": 8.0
+   },
+   {
+    "name": "Absente 1 Lt",
+    "price": 120.0
+   },
+   {
+    "name": "Absente 50 Qr",
+    "price": 7.0
+   }
+  ]
+ },
+ {
+  "name": "Rakı",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Yeni Rakı 0.7 Lt",
+    "price": 90.0
+   },
+   {
+    "name": "Yeni Rakı 0.5 Lt",
+    "price": 70.0
+   },
+   {
+    "name": "Yeni Rakı 50 Qr",
+    "price": 6.0
+   },
+   {
+    "name": "Tekirdağ 0.7 Lt",
+    "price": 110.0
+   },
+   {
+    "name": "Tekirdağ 0.35 Lt",
+    "price": 50.0
+   }
+  ]
+ },
+ {
+  "name": "Extra Qida",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Limon",
+    "price": 2.0
+   },
+   {
+    "name": "Yarpaq Xəngəl",
+    "price": 12.0
+   },
+   {
+    "name": "Ağ Pendir",
+    "price": 5.0
+   },
+   {
+    "name": "Yaşıl Alma",
+    "price": 5.0
+   },
+   {
+    "name": "Portağal",
+    "price": 5.0
+   },
+   {
+    "name": "Kələm Turşusu",
+    "price": 4.0
+   },
+   {
+    "name": "Xiyar Turşusu",
+    "price": 4.0
+   },
+   {
+    "name": "Alça Turşusu",
+    "price": 5.0
+   },
+   {
+    "name": "Acı Bibər",
+    "price": 4.0
+   },
+   {
+    "name": "Bibər Turşusu",
+    "price": 4.0
+   },
+   {
+    "name": "Pomidor Yumurta",
+    "price": 6.0
+   },
+   {
+    "name": "Lavaş",
+    "price": 2.0
+   }
+  ]
+ },
+ {
+  "name": "Alkoqolsuz Kokteyllər",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Virgin Moxito",
+    "price": 7.0
+   },
+   {
+    "name": "Tropical İcland",
+    "price": 8.0
+   },
+   {
+    "name": "Barbados",
+    "price": 10.0
+   },
+   {
+    "name": "Milkshake",
+    "price": 8.0
+   },
+   {
+    "name": "Summer Sunset",
+    "price": 10.0
+   },
+   {
+    "name": "Sindirella",
+    "price": 9.0
+   },
+   {
+    "name": "Sangria (Alkoqolsuz)",
+    "price": 10.0
+   }
+  ]
+ },
+ {
+  "name": "Alkoqollu Kokteyllər",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Pina Colada",
+    "price": 12.0
+   },
+   {
+    "name": "Aperol Spritz",
+    "price": 12.0
+   },
+   {
+    "name": "Long İceland",
+    "price": 15.0
+   },
+   {
+    "name": "Margarita",
+    "price": 12.0
+   },
+   {
+    "name": "Jin Tonic",
+    "price": 12.0
+   },
+   {
+    "name": "Sex On The Beach",
+    "price": 13.0
+   },
+   {
+    "name": "Mamajan",
+    "price": 15.0
+   },
+   {
+    "name": "Negroni",
+    "price": 13.0
+   },
+   {
+    "name": "Cosmopolitan",
+    "price": 11.0
+   },
+   {
+    "name": "Papajan Eksklusiv",
+    "price": 15.0
+   },
+   {
+    "name": "Banana Drama",
+    "price": 15.0
+   },
+   {
+    "name": "Moxito Alcohol",
+    "price": 12.0
+   }
+  ]
+ },
+ {
+  "name": "Shot (6 Ədəd)",
+  "group": "bar",
+  "items": [
+   {
+    "name": "Alabama",
+    "price": 15.0
+   },
+   {
+    "name": "Kamikadze",
+    "price": 15.0
+   },
+   {
+    "name": "Rainbow",
+    "price": 11.0
+   },
+   {
+    "name": "Sun Rice",
+    "price": 18.0
+   }
+  ]
+ }
+]

@@ -199,3 +199,72 @@ export function getAdminReservations(day: string): Promise<Reservation[]> {
 export function getAdminTables(): Promise<DiningTable[]> {
   return request(`/api/admin/tables`)
 }
+
+// --- admin dashboard ---
+
+export type DashboardRange = "this_month" | "last_2_months" | "this_year"
+
+export interface SalesPoint {
+  period: string
+  online: number
+  restaurant: number
+  total: number
+}
+
+export interface SalesSeries {
+  granularity: "day" | "month"
+  points: SalesPoint[]
+  totals: { online: number; restaurant: number; total: number }
+}
+
+export interface ClientsPoint {
+  period: string
+  from_app: number
+  total: number
+}
+
+export interface ClientsSeries {
+  granularity: "day" | "month"
+  points: ClientsPoint[]
+  totals: { from_app: number; total: number }
+}
+
+export interface CategoryShare {
+  category_id: number
+  name: string
+  revenue: number
+  percent: number
+}
+
+export interface ProductShare {
+  product_id: number
+  name: string
+  revenue: number
+  percent: number
+}
+
+export interface CategoryProducts {
+  category_id: number
+  name: string
+  revenue: number
+  products: ProductShare[]
+}
+
+export function getDashboardSales(range: DashboardRange): Promise<SalesSeries> {
+  return request(`/api/admin/dashboard/sales?range=${range}`)
+}
+
+export function getDashboardClients(range: DashboardRange): Promise<ClientsSeries> {
+  return request(`/api/admin/dashboard/clients?range=${range}`)
+}
+
+export function getDashboardCategories(range: DashboardRange): Promise<CategoryShare[]> {
+  return request(`/api/admin/dashboard/categories?range=${range}`)
+}
+
+export function getDashboardCategoryProducts(
+  range: DashboardRange,
+  categoryId: number,
+): Promise<CategoryProducts> {
+  return request(`/api/admin/dashboard/categories/${categoryId}/products?range=${range}`)
+}
