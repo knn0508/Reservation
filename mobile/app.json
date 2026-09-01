@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "ITB Reservation",
+    "slug": "itb-reservation",
+    "scheme": "itbreservation",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "backgroundColor": "#fbf8f3",
+    "android": {
+      "package": "com.itb.reservation",
+      "edgeToEdgeEnabled": true,
+      "usesCleartextTraffic": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.itb.reservation"
+    },
+    "plugins": ["expo-router", "expo-font"],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

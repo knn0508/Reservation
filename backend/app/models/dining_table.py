@@ -20,3 +20,7 @@ class DiningTable(Base):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     zone: Mapped[str] = mapped_column(String(50), nullable=False)
+    # Where the table sits on the dining room floor, as a percentage (0-100) of the floor's
+    # width and depth, so the plan renders at any size. Seeded by scripts/seed.py.
+    pos_x: Mapped[int] = mapped_column(Integer, nullable=False, default=50)
+    pos_y: Mapped[int] = mapped_column(Integer, nullable=False, default=50)

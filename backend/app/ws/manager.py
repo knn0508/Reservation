@@ -61,6 +61,7 @@ async def broadcast_slot_update(restaurant_id: int, day: date, category: TableCa
         "time": _iso_z(slot["time"]) if isinstance(slot["time"], datetime) else slot["time"],
         "category": category.value,
         "available_count": slot["available_count"],
+        "tables": slot["tables"],
     }
     redis = get_redis()
     await redis.publish(_channel(restaurant_id, day), json.dumps(payload))

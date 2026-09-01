@@ -4,16 +4,17 @@ import { CaretLeft } from "@phosphor-icons/react"
 import { PartySizeStep } from "./PartySizeStep"
 import { DateStrip } from "./DateStrip"
 import { SlotGrid } from "./SlotGrid"
+import { FloorPlan } from "./FloorPlan"
 import { ConfirmationCard } from "./ConfirmationCard"
 import { useAvailability } from "../../hooks/useAvailability"
 import { useCreateReservation } from "../../hooks/useReservation"
 import { useAuth } from "../../hooks/useAuth"
-import { defaultBookableDay } from "../../lib/time"
+import { defaultBookableDay, formatSlotTime } from "../../lib/time"
 import { ApiError } from "../../lib/api"
 
-type Step = "date" | "party" | "time" | "done"
+type Step = "date" | "party" | "time" | "table" | "done"
 
-const STEP_ORDER: Step[] = ["date", "party", "time", "done"]
+const STEP_ORDER: Step[] = ["date", "party", "time", "table", "done"]
 
 const variants = {
   enter: (dir: number) => ({ opacity: 0, x: dir * 24 }),
@@ -21,11 +22,13 @@ const variants = {
   exit: (dir: number) => ({ opacity: 0, x: dir * -24 }),
 }
 
-export function BookingWizard({ restaurantId }: { restaurantId: number }) {
+export function BookingWizard({ restaurantId, restaurantSlug }: { restaurantId: number; restaurantSlug?: string }) {
   const { user } = useAuth()
   const [step, setStep] = useState<Step>("date")
   const [day, setDay] = useState(() => defaultBookableDay())
   const [partySize, setPartySize] = useState<number | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [selectedTableId, setSelectedTableId] = useState<number | null>(null)
   const [idempotencyKey] = useState(() => crypto.randomUUID())
 
   const availability = useAvailability(restaurantId, day, partySize ?? 2)
@@ -38,7 +41,13 @@ export function BookingWizard({ restaurantId }: { restaurantId: number }) {
   }
 
   function handleSelectSlot(time: string) {
-    if (!partySize || !user) return
+    setSelectedTime(time)
+    setSelectedTableId(null)
+    goTo("table")
+  }
+
+  function handleConfirm() {
+    if (!partySize || !user || !selectedTime || selectedTable === null) return
     createReservation.mutate(
       {
         restaurant_id: restaurantId,
@@ -46,14 +55,19 @@ export function BookingWizard({ restaurantId }: { restaurantId: number }) {
         guest_email: user.email,
         guest_phone: user.phone,
         party_size: partySize,
-        start_time: time,
+        start_time: selectedTime,
+        table_id: selectedTable.id,
         idempotency_key: idempotencyKey,
       },
       { onSuccess: () => goTo("done") },
     )
   }
 
-  const backTarget: Partial<Record<Step, Step>> = { party: "date", time: "party" }
+  const slotTables = availability.data?.find((slot) => slot.time === selectedTime)?.tables ?? []
+  // A live availability push can take the highlighted table away; treat it as no longer selected.
+  const selectedTable = slotTables.find((table) => table.id === selectedTableId && table.available) ?? null
+
+  const backTarget: Partial<Record<Step, Step>> = { party: "date", time: "party", table: "time" }
   const canBack = step in backTarget
 
   return (
@@ -127,6 +141,30 @@ export function BookingWizard({ restaurantId }: { restaurantId: number }) {
                   isLoading={availability.isLoading || createReservation.isPending}
                 />
               </div>
+            </div>
+          )}
+
+          {step === "table" && selectedTime && (
+            <div>
+              <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-ember-600">Step 4</p>
+              <h2 className="font-display text-2xl text-ink-950 md:text-3xl">Choose your table</h2>
+              {/* The plan reaches into the card's padding — it is the one step that wants
+                  every pixel of width it can get. The seating it is drawn for is named in the
+                  plan's own header, so nothing above it repeats that. */}
+              <div className="-mx-4 mt-4 md:-mx-7">
+                <FloorPlan
+                  tables={slotTables}
+                  restaurantSlug={restaurantSlug}
+                  value={selectedTableId}
+                  onChange={setSelectedTableId}
+                  disabled={createReservation.isPending}
+                  partySize={partySize}
+                  slotLabel={formatSlotTime(selectedTime)}
+                  onConfirm={handleConfirm}
+                  confirmPending={createReservation.isPending}
+                />
+              </div>
+
               {createReservation.isError && (
                 <div className="mt-4 rounded-lg border border-rust-500/30 bg-rust-500/5 px-3.5 py-2.5 text-sm text-rust-500">
                   {createReservation.error instanceof ApiError

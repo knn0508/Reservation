@@ -24,6 +24,20 @@ export interface User {
 export interface AvailabilitySlot {
   time: string
   available_count: number
+  tables: AvailableTable[]
+}
+
+export interface AvailableTable {
+  id: number
+  table_number: string
+  zone: string
+  seats: number
+  /** Position on the dining room floor, as a percentage (0-100) of its width and depth. */
+  pos_x: number
+  pos_y: number
+  /** Whether this table matches the requested party size - other tables are drawn for context only. */
+  fits: boolean
+  available: boolean
 }
 
 export interface PreorderItem {
@@ -148,6 +162,7 @@ export interface CreateReservationInput {
   guest_phone: string
   party_size: number
   start_time: string
+  table_id: number
   idempotency_key: string
 }
 

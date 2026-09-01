@@ -56,13 +56,14 @@ async def create_reservation(
             party_size=payload.party_size,
             start_time=start_time,
             idempotency_key=payload.idempotency_key,
+            table_id=payload.table_id,
         )
     except booking_service.BookingWindowError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     except booking_service.UserConflictError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     except booking_service.BookingConflictError:
-        raise HTTPException(status_code=409, detail="No tables available for this time and party size")
+        raise HTTPException(status_code=409, detail="Selected table is unavailable for this time and party size")
     return reservation
 
 

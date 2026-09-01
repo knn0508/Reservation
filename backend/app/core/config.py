@@ -28,8 +28,6 @@ class Settings(BaseSettings):
     hold_ttl_seconds: int = 300
     no_show_grace_minutes: int = 20
 
-    tables_2_seater_count: int = 8
-    tables_4_seater_count: int = 6
 
     @property
     def turn_buckets(self) -> int:
