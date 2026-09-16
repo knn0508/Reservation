@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_session
 from app.core.security import decode_access_token
+from app.models.delivery import Courier
 from app.models.enums import UserRole
 from app.models.reservation import Reservation
 from app.models.user import User
@@ -41,3 +42,16 @@ async def get_current_admin(user: User = Depends(get_current_user)) -> User:
     if user.role != UserRole.ADMIN or user.restaurant_id is None:
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
+
+
+async def get_current_courier(
+    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
+) -> Courier:
+    """Resolves to the courier *profile*, not the user - every courier endpoint needs
+    restaurant_id and shift state, and this keeps that lookup out of each route."""
+    if user.role != UserRole.COURIER:
+        raise HTTPException(status_code=403, detail="Courier access required")
+    courier = await session.get(Courier, user.id)
+    if courier is None:
+        raise HTTPException(status_code=403, detail="No courier profile for this account")
+    return courier

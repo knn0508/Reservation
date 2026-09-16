@@ -1,9 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import admin, ai, auth, availability, holds, reservations, restaurants, ws
+from app.api.routes import (
+    admin,
+    ai,
+    auth,
+    availability,
+    courier,
+    delivery,
+    fleet,
+    floor_plans,
+    holds,
+    reservations,
+    restaurants,
+    ws,
+)
 
-app = FastAPI(title="Restaurant Reservation API")
+app = FastAPI(title="ITB Restaurant System API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,6 +32,10 @@ app.include_router(availability.router)
 app.include_router(reservations.router)
 app.include_router(holds.router)
 app.include_router(admin.router)
+app.include_router(floor_plans.router)
+app.include_router(delivery.router)
+app.include_router(courier.router)
+app.include_router(fleet.router)
 app.include_router(ai.router)
 app.include_router(ws.router)
 

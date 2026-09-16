@@ -40,7 +40,7 @@ export function SiteHeader() {
               <ForkKnife size={13} weight="light" />
             </span>
             <span className="font-display text-[17px] tracking-tight text-ink-950">
-              ITB <span className="italic text-ember-600">Reservation</span>
+              ITB <span className="italic text-ember-600">Restaurant</span> System
             </span>
           </NavLink>
 
@@ -50,7 +50,9 @@ export function SiteHeader() {
                 <NavItem to="/admin" end>
                   Floor
                 </NavItem>
+                <NavItem to="/admin/floor-plan">Layout</NavItem>
                 <NavItem to="/admin/dashboard">Dashboard</NavItem>
+                <NavItem to="/admin/deliveries">Deliveries</NavItem>
               </>
             ) : (
               <>
@@ -124,7 +126,9 @@ export function SiteHeader() {
               {(user?.role === "admin"
                 ? [
                     { to: "/admin", label: "Floor", end: true },
+                    { to: "/admin/floor-plan", label: "Layout", end: false },
                     { to: "/admin/dashboard", label: "Dashboard", end: false },
+                    { to: "/admin/deliveries", label: "Deliveries", end: false },
                   ]
                 : [
                     { to: "/", label: "Restaurants", end: true },

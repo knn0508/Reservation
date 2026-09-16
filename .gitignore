@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Editors / IDE
+.idea/
+.vscode/
+
+# Test and runtime artifacts
+.pytest_cache/
+pytest-cache-files-*/
+# Celery beat's schedule database: pure runtime state, and being tracked on two branches
+# makes it an unmergeable binary conflict every time they meet.
+backend/celerybeat-schedule*
+logs/
+
+# Local environment
+.env

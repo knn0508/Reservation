@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "ITB Restaurant System",
+    "slug": "itb-restaurant-system",
+    "scheme": "itbrestaurant",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "backgroundColor": "#faf7f2",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.itb.restaurantsystem",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "ITB uses your location to drop the delivery pin on your door, so the courier finds you without a phone call."
+      }
+    },
+    "android": {
+      "package": "com.itb.restaurantsystem",
+      "edgeToEdgeEnabled": true,
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "ITB uses your location to drop the delivery pin on your door, so the courier finds you without a phone call."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

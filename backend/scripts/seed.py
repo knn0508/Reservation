@@ -1,4 +1,5 @@
-"""Seeds two restaurants, their dining tables, and one admin account each. Run: python -m scripts.seed"""
+"""Seeds two restaurants, their dining tables, and one admin + one courier account each.
+Run: python -m scripts.seed"""
 import asyncio
 import sys
 
@@ -10,6 +11,7 @@ from sqlalchemy import select
 from app.core.config import settings
 from app.core.db import AsyncSessionLocal
 from app.core.security import hash_password
+from app.models.delivery import Courier
 from app.models.dining_table import DiningTable
 from app.models.enums import TableCategory, UserRole
 from app.models.restaurant import Restaurant
@@ -21,12 +23,20 @@ RESTAURANTS = [
         "name": "Mamajan Georgian Cuisine",
         "admin_email": "admin@mamajan-georgian-cuisine-demo.com",
         "admin_password": "admin12345",
+        "courier_email": "courier@mamajan-georgian-cuisine-demo.com",
+        "courier_password": "courier12345",
+        "courier_name": "Elvin Mammadov",
+        "courier_plate": "10-AA-123",
     },
     {
         "slug": "nar-bagi",
         "name": "Nar Bağı",
         "admin_email": "admin@narbagi-demo.com",
         "admin_password": "admin12345",
+        "courier_email": "courier@narbagi-demo.com",
+        "courier_password": "courier12345",
+        "courier_name": "Rashad Aliyev",
+        "courier_plate": "90-BB-456",
     },
 ]
 
@@ -78,6 +88,31 @@ async def main() -> None:
                     )
                 )
                 print(f"Seeded admin for {spec['name']}: {spec['admin_email']} / {spec['admin_password']}")
+
+            courier_user = await session.scalar(select(User).where(User.email == spec["courier_email"]))
+            if courier_user is None:
+                courier_user = User(
+                    email=spec["courier_email"],
+                    password_hash=hash_password(spec["courier_password"]),
+                    full_name=spec["courier_name"],
+                    phone="+994500000000",
+                    role=UserRole.COURIER,
+                    restaurant_id=restaurant.id,
+                )
+                session.add(courier_user)
+                await session.flush()
+                session.add(
+                    Courier(
+                        user_id=courier_user.id,
+                        restaurant_id=restaurant.id,
+                        vehicle_type="motorbike",
+                        plate_number=spec["courier_plate"],
+                    )
+                )
+                print(
+                    f"Seeded courier for {spec['name']}: "
+                    f"{spec['courier_email']} / {spec['courier_password']}"
+                )
 
         await session.commit()
 

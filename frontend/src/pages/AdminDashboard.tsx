@@ -9,6 +9,7 @@ import {
 } from "../lib/api"
 import { TwoSeriesLineChart } from "../components/dashboard/TwoSeriesLineChart"
 import { CategoryDonut, type DonutSlice } from "../components/dashboard/CategoryDonut"
+import { ChartCard, StatTile, money } from "../components/dashboard/Panels"
 import { CATEGORICAL, OTHER_COLOR } from "../lib/chartColors"
 
 const RANGE_OPTIONS: { value: DashboardRange; label: string }[] = [
@@ -18,32 +19,6 @@ const RANGE_OPTIONS: { value: DashboardRange; label: string }[] = [
 ]
 
 const MAX_DONUT_SLICES = 7
-
-function money(n: number): string {
-  return `${n.toLocaleString(undefined, { maximumFractionDigits: 0 })} ₼`
-}
-
-function StatTile({ label, value, accent }: { label: string; value: string; accent?: string }) {
-  return (
-    <div className="rounded-2xl border border-ink-900/10 bg-parchment-100/60 p-4">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-ink-600">
-        {accent && <span className="h-2 w-2 rounded-full" style={{ backgroundColor: accent }} />}
-        {label}
-      </div>
-      <p className="mt-1.5 font-display text-2xl text-ink-950">{value}</p>
-    </div>
-  )
-}
-
-function ChartCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-[1.75rem] border border-ink-900/10 bg-parchment-100/40 p-5">
-      <h2 className="font-display text-lg text-ink-950">{title}</h2>
-      {subtitle && <p className="mt-0.5 text-xs text-ink-600">{subtitle}</p>}
-      <div className="mt-4">{children}</div>
-    </div>
-  )
-}
 
 export function AdminDashboard() {
   const [range, setRange] = useState<DashboardRange>("this_month")

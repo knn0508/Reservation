@@ -11,6 +11,8 @@ import { AdminLoginPage } from "./pages/AdminLoginPage"
 import { MyReservationsPage } from "./pages/MyReservationsPage"
 import { AdminPage } from "./pages/AdminPage"
 import { AdminDashboard } from "./pages/AdminDashboard"
+import { AdminDeliveryPage } from "./pages/AdminDeliveryPage"
+import { AdminFloorPlanPage } from "./pages/AdminFloorPlanPage"
 
 function App() {
   const location = useLocation()
@@ -55,10 +57,26 @@ function App() {
           }
         />
         <Route
+          path="/admin/floor-plan"
+          element={
+            <RequireAuth role="admin">
+              <AdminFloorPlanPage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/admin/dashboard"
           element={
             <RequireAuth role="admin">
               <AdminDashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/deliveries"
+          element={
+            <RequireAuth role="admin">
+              <AdminDeliveryPage />
             </RequireAuth>
           }
         />

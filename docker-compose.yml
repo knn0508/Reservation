@@ -6,7 +6,9 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reservations
     ports:
-      - "5432:5432"
+      # Use 5433 on the host because the conventional PostgreSQL port may
+      # already be occupied. Containers still connect to db:5432.
+      - "${POSTGRES_HOST_PORT:-5433}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +20,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST_PORT:-6380}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -88,7 +90,7 @@ services:
     environment:
       VITE_API_PROXY_TARGET: http://backend:8000
     ports:
-      - "5173:5173"
+      - "${FRONTEND_HOST_PORT:-15173}:5173"
     depends_on:
       - backend
 

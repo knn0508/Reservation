@@ -14,7 +14,9 @@ import {
   type DiningTable,
   type Reservation,
 } from "../lib/api"
+import { NavLink } from "react-router-dom"
 import { DateStrip } from "../components/booking/DateStrip"
+import { FloorStatusBoard } from "../components/floorplan/FloorStatusBoard"
 import { formatSlotTime, toDayKey } from "../lib/time"
 
 const STATUS_STYLE: Record<string, string> = {
@@ -201,6 +203,18 @@ export function AdminPage() {
 
       <div className="mt-6">
         <DateStrip value={day} onChange={setDay} />
+      </div>
+
+      <div className="mt-8 rounded-[1.75rem] border border-ink-900/10 bg-parchment-100/40 p-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-display text-lg text-ink-950">Room</h2>
+          <NavLink to="/admin/floor-plan" className="text-xs text-ember-600 hover:text-ember-500">
+            Edit layout →
+          </NavLink>
+        </div>
+        <div className="mt-4">
+          <FloorStatusBoard reservations={reservations.data ?? []} />
+        </div>
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">

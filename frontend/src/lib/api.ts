@@ -1,4 +1,12 @@
 import { getToken } from "./auth-storage"
+import type {
+  FloorElementKind,
+  FloorPlanDetail,
+  FloorPlanMeta,
+  TableShape,
+} from "./floorplan"
+
+export type { FloorElement, FloorPlanDetail, FloorPlanMeta, FloorTable } from "./floorplan"
 
 export type TableCategory = "2_seater" | "4_seater"
 
@@ -200,6 +208,72 @@ export function getAdminTables(): Promise<DiningTable[]> {
   return request(`/api/admin/tables`)
 }
 
+// --- admin floor plans ---
+
+/** A table as the editor sends it back; `id` is null for one that was added on the canvas. */
+export interface FloorTableInput {
+  id: number | null
+  table_number: string
+  category: TableCategory
+  shape: TableShape
+  seats: number
+  x_cm: number
+  y_cm: number
+  width_cm: number
+  height_cm: number
+  rotation: number
+}
+
+export interface FloorElementInput {
+  kind: FloorElementKind
+  x_cm: number
+  y_cm: number
+  width_cm: number
+  height_cm: number
+  rotation: number
+  label: string | null
+  color: string | null
+  z_index: number
+}
+
+export function getFloorPlans(): Promise<FloorPlanMeta[]> {
+  return request(`/api/admin/floor-plans`)
+}
+
+export function getFloorPlan(planId: number): Promise<FloorPlanDetail> {
+  return request(`/api/admin/floor-plans/${planId}`)
+}
+
+export function createFloorPlan(input: {
+  name: string
+  width_cm?: number
+  height_cm?: number
+}): Promise<FloorPlanMeta> {
+  return request(`/api/admin/floor-plans`, { method: "POST", body: JSON.stringify(input) })
+}
+
+export function updateFloorPlan(
+  planId: number,
+  input: { name?: string; width_cm?: number; height_cm?: number },
+): Promise<FloorPlanMeta> {
+  return request(`/api/admin/floor-plans/${planId}`, { method: "PATCH", body: JSON.stringify(input) })
+}
+
+export function deleteFloorPlan(planId: number): Promise<void> {
+  return request(`/api/admin/floor-plans/${planId}`, { method: "DELETE" })
+}
+
+/** The editor saves the whole canvas at once - see the backend's save_layout for why. */
+export function saveFloorPlanLayout(
+  planId: number,
+  layout: { tables: FloorTableInput[]; elements: FloorElementInput[] },
+): Promise<FloorPlanDetail> {
+  return request(`/api/admin/floor-plans/${planId}/layout`, {
+    method: "PUT",
+    body: JSON.stringify(layout),
+  })
+}
+
 // --- admin dashboard ---
 
 export type DashboardRange = "this_month" | "last_2_months" | "this_year"
@@ -267,4 +341,96 @@ export function getDashboardCategoryProducts(
   categoryId: number,
 ): Promise<CategoryProducts> {
   return request(`/api/admin/dashboard/categories/${categoryId}/products?range=${range}`)
+}
+
+// --- owner dashboard: delivery fleet ---
+
+export type DeliveryStatus = "placed" | "accepted" | "picked_up" | "delivered" | "cancelled"
+
+export interface FleetCourier {
+  id: number
+  full_name: string
+  vehicle_type: string
+  plate_number: string | null
+  is_on_shift: boolean
+  /** Orders currently in this courier's hands. */
+  active_load: number
+  /** Null when the position key has expired - no signal, rather than a stale dot. */
+  lat: number | null
+  lng: number | null
+  heading: number | null
+  speed_mps: number | null
+  age_s: number | null
+}
+
+export interface BoardOrder {
+  id: string
+  public_code: string
+  status: DeliveryStatus
+  recipient_name: string
+  recipient_phone: string
+  address_text: string
+  lat: number
+  lng: number
+  total: number
+  courier_id: number | null
+  courier_name: string | null
+  placed_at: string
+  accepted_at: string | null
+  picked_up_at: string | null
+  delivered_at: string | null
+}
+
+export interface OriginCell {
+  lat: number
+  lng: number
+  orders: number
+  revenue: number
+}
+
+export interface CourierKpi {
+  courier_id: number
+  full_name: string
+  deliveries: number
+  revenue: number
+  avg_total_minutes: number | null
+  avg_road_minutes: number | null
+  avg_pickup_minutes: number | null
+}
+
+export interface FleetSummary {
+  couriers_on_shift: number
+  couriers_live: number
+  active_orders: number
+  unassigned_orders: number
+  delivered_today: number
+  revenue_today: number
+}
+
+export function getFleetSummary(): Promise<FleetSummary> {
+  return request("/api/admin/fleet/summary")
+}
+
+export function getFleetCouriers(): Promise<FleetCourier[]> {
+  return request("/api/admin/fleet/couriers")
+}
+
+export function getFleetOrders(includeFinished = false): Promise<BoardOrder[]> {
+  return request(`/api/admin/fleet/orders?include_finished=${includeFinished}`)
+}
+
+/** Dispatcher override: hand an order to a specific courier. */
+export function assignFleetOrder(orderId: string, courierId: number): Promise<BoardOrder> {
+  return request(`/api/admin/fleet/orders/${orderId}/assign`, {
+    method: "POST",
+    body: JSON.stringify({ courier_id: courierId }),
+  })
+}
+
+export function getOriginCells(days: number): Promise<OriginCell[]> {
+  return request(`/api/admin/fleet/analytics/origins?days=${days}`)
+}
+
+export function getCourierKpis(days: number): Promise<CourierKpi[]> {
+  return request(`/api/admin/fleet/analytics/couriers?days=${days}`)
 }

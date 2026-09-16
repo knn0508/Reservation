@@ -28,6 +28,22 @@ class Settings(BaseSettings):
     hold_ttl_seconds: int = 300
     no_show_grace_minutes: int = 20
 
+    # Online delivery: flat fee, waived above the threshold.
+    delivery_fee: float = 3.0
+    delivery_free_over: float = 40.0
+
+    # Live courier tracking. Pings outside these bounds are dropped rather than shown: a
+    # low-accuracy fix or a GPS jump reads as the marker teleporting across the city.
+    tracking_ping_max_accuracy_m: float = 100.0
+    tracking_ping_max_speed_mps: float = 40.0
+    # No position key means no signal, so this TTL is also how long a courier stays "live".
+    tracking_pos_ttl_seconds: int = 120
+    tracking_ping_rate_per_minute: int = 60
+    # Fallback pace for ETA when the courier is stopped; ~23 km/h in city traffic.
+    tracking_avg_speed_mps: float = 6.5
+    # Location history is personal data about an employee. Sweep it on a schedule.
+    tracking_location_retention_days: int = 90
+
     tables_2_seater_count: int = 8
     tables_4_seater_count: int = 6
 
